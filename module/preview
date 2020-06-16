@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+less_command=${less_command:-less}
+
+filename="$*"
+if [[ -d "$filename" ]] {
+       ls "$filename"
+   } elif [[ -f "$filename" ]] {
+       ${=less_command} "$filename"
+   }

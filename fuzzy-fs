@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+# for debug
+export field=main
+
+# get absolute directory
+base_dir=$(cd $(dirname $0); pwd)
+export PATH=$PATH:$base_dir/core
+
+# determine some basic commands
+export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
+export ls_command=${fuzzy_fs_ls_command:-_ls}
+export panel_command=$base_dir/module/panel
+
+# main loop
+while [[ $res_command != exit ]] ; do
+    res=$($panel_command .)
+    res_command=$(echo $res | head -n1)
+    case "$res_command" in
+        cd)
+            target=$(echo $res | tail -n+2)
+            cd $target
+            ;;
+        rm)
+            target=$(echo $res | tail -n+2)
+            rm -ir $target
+            ;;
+        exception)
+            echo something unexpected happend, please contact the author.
+            res_command=exit
+            ;;
+    esac
+done

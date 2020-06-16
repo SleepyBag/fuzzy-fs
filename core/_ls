@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+ls -lA $* | tail -n+2

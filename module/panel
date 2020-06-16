@@ -1,0 +1,50 @@
+#!/bin/zsh
+
+# for debug
+export field=panel
+
+# get absolute directory
+base_dir=$(cd $(dirname $0); pwd)
+
+# key bindings
+key_enter=${key_enter:-enter}
+key_delete=${key_delete:-ctrl-d}
+key_exit=${key_exit:-ctrl-c}
+
+# show fzf and get result
+current_dir="$*"
+res=$(
+    ${=ls_command} $current_dir | \
+        fzf --preview="$preview_command $current_dir/{-1}" \
+            --expect "$key_enter,$key_delete,$key_exit"
+)
+
+debug fzf-res:
+debug $res
+
+# if fzf returned successfully, return to
+if [[ $? = 0 ]] {
+       key=$(echo $res | head -n1)
+       item=$(echo $res | tail -n+2)
+       debug fzf-key:
+       debug $key
+       debug fzf-item:
+       debug $item
+       case "$key" in
+           $key_enter)
+               echo cd
+               filename=$current_dir/$(echo $item | awk '{print $NF}')
+               echo $filename
+               ;;
+           $key_delete)
+               echo rm
+               filename=$current_dir/$(echo $item | awk '{print $NF}')
+               echo $filename
+               ;;
+           $key_exit)
+               echo exit
+               ;;
+       esac
+   } else {
+       echo exception
+   }
