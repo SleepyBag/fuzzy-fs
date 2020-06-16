@@ -10,13 +10,14 @@ base_dir=$(cd $(dirname $0); pwd)
 key_enter=${key_enter:-enter}
 key_delete=${key_delete:-ctrl-d}
 key_exit=${key_exit:-ctrl-c}
+key_parent=${key_parent:-ctrl-h}
 
 # show fzf and get result
 current_dir="$*"
 res=$(
     ${=ls_command} $current_dir | \
         fzf --preview="$preview_command $current_dir/{-1}" \
-            --expect "$key_enter,$key_delete,$key_exit"
+            --expect "$key_enter,$key_delete,$key_exit,$key_parent"
 )
 
 debug fzf-res:
@@ -35,6 +36,10 @@ if [[ $? = 0 ]] {
                echo cd
                filename=$current_dir/$(echo $item | awk '{print $NF}')
                echo $filename
+               ;;
+           $key_parent)
+               echo cd
+               echo ..
                ;;
            $key_delete)
                echo rm
