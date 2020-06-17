@@ -1,0 +1,4 @@
+function debug_var() {
+    var="$*"
+    >&2 echo $field :: $var : ${(P)var}
+}

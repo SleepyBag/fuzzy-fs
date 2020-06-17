@@ -1,0 +1,61 @@
+#!/bin/zsh
+
+# for debug
+export field=history-panel
+autoload -Uz debug_var
+
+# key bindings
+key_exit=${key_exit:-ctrl-c}
+key_run_selected=${key_run_selected:-enter}
+key_run_query=${key_run_query:-ctrl-y}
+
+# parameters and settings
+current_dir="$*"
+cd $current_dir
+[[ $enable_color == true ]] && color_param=--ansi
+
+# get header
+header="Directory: $current_dir"$'\n'
+header=$header$'\n'"Run Seleted Command: $key_run_selected"
+header=$header$'\n'"Run Input: $key_run_query"
+header=$header$'\n'"Exit: $key_exit"
+header+=$'\n'" "
+
+# show fzf and get result
+res=$(
+    ${=history_command} $current_dir | \
+        fzf --prompt="Command Filter: " \
+            --header="$header" \
+            --print-query \
+            $color_param \
+            --preview="$preview_command $current_dir/{-1}" \
+            --expect "$key_run_selected,$key_exit,$key_run_query"
+)
+
+debug_var res
+
+# if fzf returned successfully, return
+if [[ $? = 0 ]] {
+       query=$(echo $res | head -n1)
+       key=$(echo $res | head -n2 | tail -n1)
+       item=$(echo $res | tail -n+3)
+       debug_var key
+       debug_var item
+       echo $query
+       case "$key" in
+           $key_run_selected)
+               echo run
+               echo $item
+               ;;
+           $key_run_query)
+               echo run
+               echo $query
+               ;;
+           $key_exit)
+               echo exit
+               ;;
+       esac
+   } else {
+# else return exception
+       echo exception
+   }

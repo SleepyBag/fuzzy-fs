@@ -2,15 +2,20 @@
 
 # for debug
 export field=main
+autoload -Uz debug_var
 
 # get absolute directory
 export base_dir=$(cd $(dirname $0); pwd)
 export PATH=$PATH:$base_dir/core
+fpath+=($base_dir/core)
+export fpath
 
 # determine some basic commands
 export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
+export ls_panel_command=$base_dir/module/ls-panel
+export history_panel_command=$base_dir/module/history-panel
 export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
-export panel_command=$base_dir/module/panel
+export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
 
 # params
 while getopts "ad-:" param; do
@@ -40,14 +45,14 @@ export EDITOR=${EDITOR:-vim}
 # main loop
 while [[ $res_command != exit ]] ; do
     current_path=$(abspath $current_path)
-    res=$($panel_command $current_path)
+    res=$($ls_panel_command $current_path)
     query=$(echo $res | head -n1)
     res_command=$(echo $res | head -n2 | tail -n1)
     target=$(echo $res | tail -n+3)
-    debug res: ; debug $res
-    debug query: ; debug $query
-    debug res_command: ; debug $res_command
-    debug target: ; debug $target
+    debug_var res
+    debug_var query
+    debug_var res_command
+    debug_var target
     case "$res_command" in
         cd)
             current_path=$target
@@ -62,10 +67,16 @@ while [[ $res_command != exit ]] ; do
             zsh -c "$target"
             ;;
         external_command)
-            export F=$target
-            echo -n "Run command:"
-            read cmd
-            zsh -c "$cmd"
+            hist_res=$($history_panel_command $current_path)
+            debug_var hist_res
+            if [[ $(echo $hist_res | head -n2 | tail -n1) != exit ]] {
+                   cmd=$(echo $hist_res | tail -n+3 )
+                   debug_var cmd
+                   export F=$target
+                   zsh -c "$cmd"
+               }
+               ;;
+        exit)
             ;;
         *)
             echo something unexpected happend, please contact the author.

@@ -1,5 +1,0 @@
-#!/bin/zsh
-
-if [[ "$debug_mode" == true ]] {
-       >&2 echo $field::$*
-}

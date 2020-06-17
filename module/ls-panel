@@ -1,7 +1,8 @@
 #!/bin/zsh
 
 # for debug
-export field=panel
+export field=ls-panel
+autoload -Uz debug_var
 
 # key bindings
 key_enter=${key_enter:-enter}
@@ -34,18 +35,15 @@ res=$(
             --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run,$key_command"
 )
 
-debug fzf-res:
-debug $res
+debug_var res
 
 # if fzf returned successfully, return
 if [[ $? = 0 ]] {
        query=$(echo $res | head -n1)
        key=$(echo $res | head -n2 | tail -n1)
        item=$(echo $res | tail -n+3)
-       debug fzf-key:
-       debug $key
-       debug fzf-item:
-       debug $item
+       debug_var key
+       debug_var item
        echo $query
        case "$key" in
            $key_enter)
