@@ -3,34 +3,50 @@
 # for debug
 export field=panel
 
-# get absolute directory
-base_dir=$(cd $(dirname $0); pwd)
-
 # key bindings
 key_enter=${key_enter:-enter}
 key_delete=${key_delete:-ctrl-d}
 key_exit=${key_exit:-ctrl-c}
-key_parent=${key_parent:-ctrl-h}
+key_parent=${key_parent:-ctrl-u}
+key_edit=${key_edit:-ctrl-e}
+key_run=${key_run:-ctrl-r}
+key_command=${key_command:-ctrl-t}
+
+# parameters and settings
+current_dir="$*"
+[[ $enable_color == true ]] && color_param=--ansi
+
+# get header
+header="Directory: $current_dir"$'\n'
+header=$header$'\n'"Open: $key_enter"$'\t'"Delete: $key_delete"$'\t'"Edit: $key_edit"
+header=$header$'\n'"Exit: $key_exit"$'\t'"Go parent: $key_parent"$'\t'"Run: $key_run"
+header=$header$'\n'"Run External Command: $key_command"
+header+=$'\n'" "
 
 # show fzf and get result
-current_dir="$*"
 res=$(
     ${=ls_command} $current_dir | \
-        fzf --preview="$preview_command $current_dir/{-1}" \
-            --expect "$key_enter,$key_delete,$key_exit,$key_parent"
+        fzf --prompt="Filter: " \
+            --header="$header" \
+            --print-query \
+            $color_param \
+            --preview="$preview_command $current_dir/{-1}" \
+            --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run,$key_command"
 )
 
 debug fzf-res:
 debug $res
 
-# if fzf returned successfully, return to
+# if fzf returned successfully, return
 if [[ $? = 0 ]] {
-       key=$(echo $res | head -n1)
-       item=$(echo $res | tail -n+2)
+       query=$(echo $res | head -n1)
+       key=$(echo $res | head -n2 | tail -n1)
+       item=$(echo $res | tail -n+3)
        debug fzf-key:
        debug $key
        debug fzf-item:
        debug $item
+       echo $query
        case "$key" in
            $key_enter)
                echo cd
@@ -39,10 +55,25 @@ if [[ $? = 0 ]] {
                ;;
            $key_parent)
                echo cd
-               echo ..
+               echo $(dirname $current_dir)
                ;;
            $key_delete)
                echo rm
+               filename=$current_dir/$(echo $item | awk '{print $NF}')
+               echo $filename
+               ;;
+           $key_edit)
+               echo edit
+               filename=$current_dir/$(echo $item | awk '{print $NF}')
+               echo $filename
+               ;;
+           $key_run)
+               echo run
+               filename=$current_dir/$(echo $item | awk '{print $NF}')
+               echo $filename
+               ;;
+           $key_command)
+               echo external_command
                filename=$current_dir/$(echo $item | awk '{print $NF}')
                echo $filename
                ;;
@@ -51,5 +82,6 @@ if [[ $? = 0 ]] {
                ;;
        esac
    } else {
+# else return exception
        echo exception
    }

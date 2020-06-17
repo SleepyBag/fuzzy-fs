@@ -1,3 +1,5 @@
-#/bin/zsh
+#!/bin/zsh
 
->&2 echo $field::$*
+if [[ "$debug_mode" == true ]] {
+       >&2 echo $field::$*
+}

@@ -4,7 +4,11 @@ less_command=${less_command:-less}
 
 filename="$*"
 if [[ -d "$filename" ]] {
-       ls "$filename"
+       echo "$(basename $filename)" is a directory:
+       echo
+       ls --color=always "$filename"
    } elif [[ -f "$filename" ]] {
+       echo "$(basename $filename)" is a file:
+       echo
        ${=less_command} "$filename"
    }

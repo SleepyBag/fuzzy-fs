@@ -1,3 +1,7 @@
 #!/bin/zsh
 
-ls -lA $* | tail -n+2
+# params
+[[ $enable_color == true ]] && color_param=--color=always
+[[ $show_hidden == true ]] && hidden_param=-A
+
+ls -l $hidden_param $color_param $* | tail -n+2

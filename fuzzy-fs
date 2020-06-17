@@ -4,28 +4,70 @@
 export field=main
 
 # get absolute directory
-base_dir=$(cd $(dirname $0); pwd)
+export base_dir=$(cd $(dirname $0); pwd)
 export PATH=$PATH:$base_dir/core
 
 # determine some basic commands
 export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
-export ls_command=${fuzzy_fs_ls_command:-_ls}
+export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
 export panel_command=$base_dir/module/panel
+
+# params
+while getopts "ad-:" param; do
+    case "$param" in
+        -)
+            case "$OPTARG" in
+                no-color)
+                    enable_color=false
+                    ;;
+            esac
+            ;;
+        a)
+            show_hidden=true
+            ;;
+        d)
+            debug_mode=true
+            ;;
+    esac
+done
+export enable_color=${enable_color:-true}
+export show_hidden=${show_hidden:-false}
+export debug_mode=${debug_mode:-false}
+export EDITOR=${EDITOR:-vim}
+
+[[ -z "$*" ]] && current_path=$*
 
 # main loop
 while [[ $res_command != exit ]] ; do
-    res=$($panel_command .)
-    res_command=$(echo $res | head -n1)
+    current_path=$(abspath $current_path)
+    res=$($panel_command $current_path)
+    query=$(echo $res | head -n1)
+    res_command=$(echo $res | head -n2 | tail -n1)
+    target=$(echo $res | tail -n+3)
+    debug res: ; debug $res
+    debug query: ; debug $query
+    debug res_command: ; debug $res_command
+    debug target: ; debug $target
     case "$res_command" in
         cd)
-            target=$(echo $res | tail -n+2)
-            cd $target
+            current_path=$target
             ;;
         rm)
-            target=$(echo $res | tail -n+2)
             rm -ir $target
             ;;
-        exception)
+        edit)
+            $EDITOR $target
+            ;;
+        run)
+            zsh -c "$target"
+            ;;
+        external_command)
+            export F=$target
+            echo -n "Run command:"
+            read cmd
+            zsh -c "$cmd"
+            ;;
+        *)
             echo something unexpected happend, please contact the author.
             res_command=exit
             ;;
