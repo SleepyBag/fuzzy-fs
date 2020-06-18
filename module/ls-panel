@@ -11,17 +11,19 @@ key_exit=${key_exit:-ctrl-c}
 key_parent=${key_parent:-ctrl-u}
 key_edit=${key_edit:-ctrl-e}
 key_run=${key_run:-ctrl-r}
-key_command=${key_command:-ctrl-t}
+key_run_query=${key_run_query:-ctrl-y}
 
 # parameters and settings
 current_dir="$*"
 [[ $enable_color == true ]] && color_param=--ansi
 
+# debug_var current_dir
+
 # get header
 header="Directory: $current_dir"$'\n'
 header=$header$'\n'"Open: $key_enter"$'\t'"Delete: $key_delete"$'\t'"Edit: $key_edit"
 header=$header$'\n'"Exit: $key_exit"$'\t'"Go parent: $key_parent"$'\t'"Run: $key_run"
-header=$header$'\n'"Run External Command: $key_command"
+header=$header$'\n'"Run Query as Command: $key_run_query"
 header+=$'\n'" "
 
 # show fzf and get result
@@ -32,7 +34,7 @@ res=$(
             --print-query \
             $color_param \
             --preview="$preview_command $current_dir/{-1}" \
-            --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run,$key_command"
+            --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run,$key_run_query"
 )
 
 debug_var res
@@ -47,9 +49,14 @@ if [[ $? = 0 ]] {
        echo $query
        case "$key" in
            $key_enter)
-               echo cd
-               filename=$current_dir/$(echo $item | awk '{print $NF}')
-               echo $filename
+               if [[ $(echo $item | awk '{print $1}') == "Command:" ]] {
+                      echo run
+                      echo $item | awk '{$1=""; print $0}'
+                  } else {
+                      echo enter
+                      filename=$current_dir/$(echo $item | awk '{print $NF}')
+                      echo $filename
+               }
                ;;
            $key_parent)
                echo cd
@@ -70,11 +77,14 @@ if [[ $? = 0 ]] {
                filename=$current_dir/$(echo $item | awk '{print $NF}')
                echo $filename
                ;;
-           $key_command)
-               echo external_command
-               filename=$current_dir/$(echo $item | awk '{print $NF}')
-               echo $filename
+           $key_run_query)
+               echo run
+               echo $query
                ;;
+           # $key_external_command)
+               # echo external_command
+               # filename=$current_dir/$(echo $item | awk '{print $NF}')
+               # echo $filename
            $key_exit)
                echo exit
                ;;

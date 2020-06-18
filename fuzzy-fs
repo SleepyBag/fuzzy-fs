@@ -14,8 +14,6 @@ export fpath
 export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
 export ls_panel_command=$base_dir/module/ls-panel
 export history_panel_command=$base_dir/module/history-panel
-export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
-export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
 
 # params
 while getopts "ad-:" param; do
@@ -40,11 +38,18 @@ export show_hidden=${show_hidden:-false}
 export debug_mode=${debug_mode:-false}
 export EDITOR=${EDITOR:-vim}
 
-[[ -z "$*" ]] && current_path=$*
+export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
+export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
+export open_command=${fuzzy_fs_open_command:-"xdg-open"}
+
+# [[ -z "$*" ]] && current_path=$*
+current_path=.
 
 # main loop
 while [[ $res_command != exit ]] ; do
     current_path=$(abspath $current_path)
+    debug_var current_path
+
     res=$($ls_panel_command $current_path)
     query=$(echo $res | head -n1)
     res_command=$(echo $res | head -n2 | tail -n1)
@@ -54,6 +59,13 @@ while [[ $res_command != exit ]] ; do
     debug_var res_command
     debug_var target
     case "$res_command" in
+        enter)
+            if [[ -d $target ]] {
+                   current_path=$target
+               } else {
+                   zsh -c "${=open_command} $target" &> /dev/null
+               }
+               ;;
         cd)
             current_path=$target
             ;;
@@ -64,7 +76,7 @@ while [[ $res_command != exit ]] ; do
             $EDITOR $target
             ;;
         run)
-            zsh -c "$target"
+            zsh -c "cd $current_path; $target"
             ;;
         external_command)
             hist_res=$($history_panel_command $current_path)
@@ -73,7 +85,7 @@ while [[ $res_command != exit ]] ; do
                    cmd=$(echo $hist_res | tail -n+3 )
                    debug_var cmd
                    export F=$target
-                   zsh -c "$cmd"
+                   zsh -c "cd $current_path; $cmd"
                }
                ;;
         exit)

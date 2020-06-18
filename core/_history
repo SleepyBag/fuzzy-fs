@@ -1,15 +1,17 @@
 #!/bin/zsh
 
 export field=_history
+autoload -Uz debug_var
 
 HISTORY_BASE=/home/qmxue/.directory_history
 
-debug $HISTFILE
-debug $HISTORY_BASE
+debug_var $HISTFILE
+debug_var $HISTORY_BASE
 
+current_path="$*"
 # if you are using per-directory-history, please set $HISTORY_BASE
 if [[ ! -z "$HISTORY_BASE" ]] {
-    _per_directory_history_directory="$HISTORY_BASE${PWD:A}/history"
+    _per_directory_history_directory="$HISTORY_BASE${current_path:A}/history"
     mkdir -p ${_per_directory_history_directory:h}
 
     #read history in new file
@@ -18,4 +20,4 @@ if [[ ! -z "$HISTORY_BASE" ]] {
     fi
 }
 
-history | sed -re 's/^\s*[0-9]+\s*//'
+history | sed -re 's/^\s*[0-9]+\s*//' | awk '!x[$0]++' | sed 's/^/Command:  /'
