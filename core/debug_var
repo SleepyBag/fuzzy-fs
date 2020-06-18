@@ -1,6 +1,6 @@
 function debug_var() {
     if [[ "$debug_mode" == true ]] {
         var="$*"
-        >&2 echo $field :: $var : ${(P)var}
+        echo $field :: $var : ${(P)var} >> $log_file
     }
 }

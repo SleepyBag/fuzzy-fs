@@ -4,7 +4,8 @@
 [[ $enable_color == true ]] && color_param=--color=always
 [[ $show_hidden == true ]] && hidden_param=-A
 
-ls -l $hidden_param $color_param $* | tail -n+2
+ls -l $hidden_param $color_param $* | tail -n+2 | \
+    sed "s/^d/$directory_icon  d/;s/^-/$file_icon  -/;s/^l/$link_icon  l/"
 
 echo
 

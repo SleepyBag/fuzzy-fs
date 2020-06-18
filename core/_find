@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+export field=_find
+autoload -Uz debug_var
+
+# params
+[[ $enable_color == true ]] && color_param=--color=always
+
+current_path="$*"
+debug_var current_path
+
+if {which fd &> /dev/null} {
+        if [[ $show_hidden == true ]] {
+               fd $color_param -IH . "$current_path"
+           } else {
+               fd $color_param -I . "$current_path"
+           }
+    } else {
+        if [[ $show_hidden == true ]] {
+               find "$current_path"
+           } else {
+               find "$current_path" -not -path '*/\.*'
+           }
+    }

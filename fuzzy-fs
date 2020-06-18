@@ -2,17 +2,22 @@
 
 # for debug
 export field=main
-autoload -Uz debug_var
 
-# get absolute directory
 export base_dir=$(cd $(dirname $0); pwd)
+autoload -Uz debug_var
+export colors=$(ls $base_dir/colors)
+export foobar=foobar
+autoload -Uz ${=colors}
+
 export PATH=$PATH:$base_dir/core
 fpath+=($base_dir/core)
+fpath+=($base_dir/colors)
 export fpath
 
 # determine some basic commands
 export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
 export ls_panel_command=$base_dir/module/ls-panel
+export find_panel_command=$base_dir/module/find-panel
 export history_panel_command=$base_dir/module/history-panel
 
 # params
@@ -36,24 +41,46 @@ done
 export enable_color=${enable_color:-true}
 export show_hidden=${show_hidden:-false}
 export debug_mode=${debug_mode:-false}
+export log_file=$base_dir/.log
 export EDITOR=${EDITOR:-vim}
+export SHELL=${SHELL:-bash}
+[[ -d $HOME/.directory_history && -z "$HISTORY_BASE" ]] && export HISTORY_BASE=$HOME/.directory_history
 
+# tunable commands
 export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
+export find_command=${fuzzy_fs_ls_command:-$base_dir/core/_find}
 export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
 export open_command=${fuzzy_fs_open_command:-"xdg-open"}
 
+export file_icon=${fuzzy_fs_file_icon:-}
+export directory_icon=${fuzzy_fs_directory_icon:-}
+export command_icon=${command_icon:-}
+
+function check_empty () {
+    var_name="$*"
+    if [[ ${(P)var_name} == "" ]] {
+           echo "$var_name cannot be empty!"
+           exit 1
+       }
+}
+check_empty file_icon
+check_empty directory_icon
+check_empty command_icon
+
 # [[ -z "$*" ]] && current_path=$*
 current_path=.
+next_panel_command=$ls_panel_command
 
 # main loop
 while [[ $res_command != exit ]] ; do
     current_path=$(abspath $current_path)
     debug_var current_path
 
-    res=$($ls_panel_command $current_path)
+    res=$($next_panel_command $current_path $pre_query)
     query=$(echo $res | head -n1)
     res_command=$(echo $res | head -n2 | tail -n1)
     target=$(echo $res | tail -n+3)
+    pre_query=""
     debug_var res
     debug_var query
     debug_var res_command
@@ -68,6 +95,7 @@ while [[ $res_command != exit ]] ; do
                ;;
         cd)
             current_path=$target
+            [[ "$next_panel_command" == "$find_panel_command" ]] && next_panel_command=$ls_panel_command
             ;;
         rm)
             rm -ir $target
@@ -78,16 +106,32 @@ while [[ $res_command != exit ]] ; do
         run)
             zsh -c "cd $current_path; $target"
             ;;
-        external_command)
-            hist_res=$($history_panel_command $current_path)
-            debug_var hist_res
-            if [[ $(echo $hist_res | head -n2 | tail -n1) != exit ]] {
-                   cmd=$(echo $hist_res | tail -n+3 )
-                   debug_var cmd
-                   export F=$target
-                   zsh -c "cd $current_path; $cmd"
-               }
-               ;;
+        find)
+            next_panel_command=$find_panel_command
+            ;;
+        ls)
+            next_panel_command=$ls_panel_command
+            ;;
+        shell)
+            $SHELL
+            ;;
+        suspend)
+            suspend
+            ;;
+        toggle_hidden)
+            [[ $show_hidden = true ]] && show_hidden=false || show_hidden=true
+            pre_query=$query
+            ;;
+        # run)
+        #     hist_res=$($history_panel_command $current_path)
+        #     debug_var hist_res
+        #     if [[ $(echo $hist_res | head -n2 | tail -n1) != exit ]] {
+        #            cmd=$(echo $hist_res | tail -n+3 )
+        #            debug_var cmd
+        #            export F=$target
+        #            zsh -c "cd $current_path; $cmd"
+        #        }
+        #        ;;
         exit)
             ;;
         *)
