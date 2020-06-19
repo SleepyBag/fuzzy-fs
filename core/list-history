@@ -16,5 +16,4 @@ function list-history {
        }
 
        history | sed -re 's/^\s*[0-9]+\s*//' | awk '!x[$0]++' | sed "s/^/$command_icon  /"
-
 }

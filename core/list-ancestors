@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+function list-ancestors {
+    filename=$*
+    while [[ $filename != / ]] ;do
+        echo $ancestor_icon  $filename
+        filename=$(dirname $filename)
+    done
+    echo $ancestor_icon  /
+}

@@ -8,7 +8,7 @@ autoload -Uz debug_var
 export colors=$(ls $base_dir/colors)
 autoload -Uz ${=colors}
 autoload -Uz find-panel ls-panel preview
-autoload find-recursively list-history list-file abspath
+autoload -Uz find-recursively list-history list-file abspath list-ancestors
 
 # export PATH=$PATH:$base_dir/core
 fpath+=($base_dir/core)
@@ -58,12 +58,14 @@ export SHELL=${SHELL:-bash}
 # export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
 # export find_command=${fuzzy_fs_ls_command:-$base_dir/core/_find}
 # export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
-export ls_command=list-file
-export find_command=find-recursively
-export history_command=list-history
+export ls_command=${fuzzy_fs_ls_command:-list-file}
+export find_command=${fuzzy_fs_find_command:-find-recursively}
+export history_command=${fuzzy_fs_history_command:-list-history}
+export ancestors_command=${fuzzy_fs_ancestors_command:-list-ancestors}
 export open_command=${fuzzy_fs_open_command:-"xdg-open"}
 
 export file_icon=${fuzzy_fs_file_icon:-}
+export ancestor_icon=${fuzzy_fs_ancestor_icon:-}
 export directory_icon=${fuzzy_fs_directory_icon:-}
 export command_icon=${command_icon:-}
 
@@ -97,13 +99,16 @@ while [[ $res_command != exit ]] ; do
     debug_var res_command
     debug_var target
     case "$res_command" in
-        enter)
-            if [[ -d $target ]] {
-                   current_path=$target
-               } else {
-                   zsh -c "${=open_command} $target" &> /dev/null
-               }
-               ;;
+        # enter)
+        #     if [[ -d $target ]] {
+        #            current_path=$target
+        #        } else {
+        #            zsh -c "${=open_command} $target" &> /dev/null
+        #        }
+        #        ;;
+        open)
+            zsh -c "${=open_command} $target" &> /dev/null
+            ;;
         cd)
             current_path=$target
             [[ "$next_panel_command" == "$find_panel_command" ]] && next_panel_command=$ls_panel_command

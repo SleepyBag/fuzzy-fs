@@ -8,8 +8,4 @@ function list-file {
     ls -l $hidden_param $color_param $* | tail -n+2 | \
         sed "s/^d/$directory_icon  d/;s/^-/$file_icon  -/;s/^l/$link_icon  l/"
 
-    echo
-
-    ${=history_command} $*
-
 }
