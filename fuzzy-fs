@@ -16,7 +16,7 @@ fpath+=($base_dir/colors)
 export fpath
 
 # determine some basic commands
-export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
+export preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/preview}
 export ls_panel_command=ls-panel
 export find_panel_command=find-panel
 
@@ -27,21 +27,22 @@ zparseopts -no-color=no_color \
 export log_file=$base_dir/.log
 export EDITOR=${EDITOR:-vim}
 export SHELL=${SHELL:-bash}
+export TERMINAL=${TERMINAL:-konsole}
 [[ -d $HOME/.directory_history && -z "$HISTORY_BASE" ]] && export HISTORY_BASE=$HOME/.directory_history
 
 # tunable commands
-export ls_command=${fuzzy_fs_ls_command:-list-file}
-export ls_recent_command=${fuzzy_fs_ls_recent_command:-list-recent-dir}
-export find_command=${fuzzy_fs_find_command:-find-recursively}
-export history_command=${fuzzy_fs_history_command:-list-history}
-export ancestors_command=${fuzzy_fs_ancestors_command:-list-ancestors}
-export open_command=${fuzzy_fs_open_command:-"xdg-open"}
+export ls_command=${FUZZY_FS_LS_COMMAND:-list-file}
+export ls_recent_command=${FUZZY_FS_LS_RECENT_COMMAND:-list-recent-dir}
+export find_command=${FUZZY_FS_FIND_COMMAND:-find-recursively}
+export history_command=${FUZZY_FS_HISTORY_COMMAND:-list-history}
+export ancestors_command=${FUZZY_FS_ANCESTORS_COMMAND:-list-ancestors}
+export open_command=${FUZZY_FS_OPEN_COMMAND:-"xdg-open"}
 
-export file_icon=${fuzzy_fs_file_icon:-}
-export ancestor_icon=${fuzzy_fs_ancestor_icon:-}
-export directory_icon=${fuzzy_fs_directory_icon:-}
-export command_icon=${fuzzy_fs_command_icon:-}
-export recent_dir_icon=${fuzzy_fs_recent_dir_icon:-}
+export file_icon=${FUZZY_FS_FILE_ICON:-}
+export ancestor_icon=${FUZZY_FS_ANCESTOR_ICON:-}
+export directory_icon=${FUZZY_FS_DIRECTORY_ICON:-}
+export command_icon=${FUZZY_FS_COMMAND_ICON:-}
+export recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:-}
 
 function check_empty () {
     var_name="$*"

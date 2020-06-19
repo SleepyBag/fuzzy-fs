@@ -4,9 +4,9 @@ function find-panel {
     local field=find-panel
 
     # key bindings
-    key_enter=${key_enter:-enter}
-    key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
-    key_exit=${key_exit:-ctrl-c}
+    key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
+    key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
+    key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-C}
 
     # parameters and settings
     current_dir="$1"

@@ -5,16 +5,16 @@ function ls-panel {
     local field=ls-panel
 
     # key bindings
-    local key_enter=${key_enter:-enter}
-    local key_delete=${key_delete:-ctrl-d}
-    local key_exit=${key_exit:-ctrl-c}
-    local key_parent=${key_parent:-ctrl-u}
-    local key_edit=${key_edit:-ctrl-e}
-    local key_run=${key_run:-ctrl-r}
-    local key_find=${key_find:-ctrl-f}
-    local key_run_query=${key_run_query:-ctrl-y}
-    local key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
-    local key_shell=${key_shell:-ctrl-o}
+    local key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
+    local key_delete=${FUZZY_FS_KEY_DELETE:-Ctrl-D}
+    local key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-C}
+    local key_parent=${FUZZY_FS_KEY_PARENT:-Ctrl-U}
+    local key_edit=${FUZZY_FS_KEY_EDIT:-Ctrl-E}
+    local key_run=${FUZZY_FS_KEY_RUN:-Ctrl-R}
+    local key_find=${FUZZY_FS_KEY_FIND:-Ctrl-F}
+    local key_run_query=${FUZZY_FS_KEY_RUN_QUERY:-Ctrl-Y}
+    local key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
+    local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-O}
 
     # parameters and settings
     local current_dir="$1"
