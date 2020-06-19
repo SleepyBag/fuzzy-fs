@@ -7,8 +7,10 @@ export base_dir=$(cd $(dirname $0); pwd)
 autoload -Uz debug_var
 export colors=$(ls $base_dir/colors)
 autoload -Uz ${=colors}
-autoload -Uz find-panel ls-panel preview
-autoload -Uz find-recursively list-history list-file abspath list-ancestors
+# autoload -Uz find-panel ls-panel preview
+# autoload -Uz find-recursively list-history list-file abspath list-ancestors open-shell edit preview list-recent-file
+autoload -Uz $(ls $base_dir/core)
+autoload -Uz $(ls $base_dir/module)
 
 # export PATH=$PATH:$base_dir/core
 fpath+=($base_dir/core)
@@ -59,6 +61,7 @@ export SHELL=${SHELL:-bash}
 # export find_command=${fuzzy_fs_ls_command:-$base_dir/core/_find}
 # export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
 export ls_command=${fuzzy_fs_ls_command:-list-file}
+export ls_recent_command=${fuzzy_fs_ls_recent_command:-list-recent-dir}
 export find_command=${fuzzy_fs_find_command:-find-recursively}
 export history_command=${fuzzy_fs_history_command:-list-history}
 export ancestors_command=${fuzzy_fs_ancestors_command:-list-ancestors}
@@ -67,7 +70,8 @@ export open_command=${fuzzy_fs_open_command:-"xdg-open"}
 export file_icon=${fuzzy_fs_file_icon:-}
 export ancestor_icon=${fuzzy_fs_ancestor_icon:-}
 export directory_icon=${fuzzy_fs_directory_icon:-}
-export command_icon=${command_icon:-}
+export command_icon=${fuzzy_fs_command_icon:-}
+export recent_dir_icon=${fuzzy_fs_recent_dir_icon:-}
 
 function check_empty () {
     var_name="$*"
@@ -117,7 +121,9 @@ while [[ $res_command != exit ]] ; do
             rm -ir $target
             ;;
         edit)
-            $EDITOR $target
+            debug_var current_path
+            debug_var target
+            edit "$current_path" "$target"
             ;;
         run)
             zsh -c "cd $current_path; $target"
@@ -129,11 +135,11 @@ while [[ $res_command != exit ]] ; do
             next_panel_command=$ls_panel_command
             ;;
         shell)
-            $SHELL
+            open-shell "$current_path"
             ;;
-        suspend)
-            suspend
-            ;;
+        # suspend)
+        #     suspend
+        #     ;;
         toggle_hidden)
             [[ $show_hidden = true ]] && show_hidden=false || show_hidden=true
             pre_query=$query

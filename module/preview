@@ -17,7 +17,7 @@ if {which bat &> /dev/null} {
     if [[ -d "$filename" ]] {
             echo "$(basename $filename)" is a directory:
             echo
-            ls --color=always "$filename"
+            ls -la $color_param "$filename"
         } elif [[ -f "$filename" ]] {
             ${=less_command} "$filename"
         }

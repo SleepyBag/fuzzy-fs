@@ -16,6 +16,7 @@ function find-panel {
     # get header
     header+=$'\n'$(green "Open Directory:")$'\t'$(white "$key_enter")
     header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")
+    header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")
     header+=$'\n'$'\n'
     header+="Directory: $current_dir"
     header+=$'\n'" "
