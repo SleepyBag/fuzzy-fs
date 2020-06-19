@@ -1,115 +1,119 @@
 #!/bin/zsh
 
-# for debug
-export field=ls-panel
-autoload -Uz debug_var
-autoload -Uz ${=colors}
+function ls-panel {
+    # for debug
+    local field=ls-panel
+    # autoload -Uz debug_var
+    # autoload -Uz ${=colors}
 
-# key bindings
-key_enter=${key_enter:-enter}
-key_delete=${key_delete:-ctrl-d}
-key_exit=${key_exit:-ctrl-c}
-key_parent=${key_parent:-ctrl-u}
-key_edit=${key_edit:-ctrl-e}
-key_run=${key_run:-ctrl-r}
-key_find=${key_find:-ctrl-f}
-key_run_query=${key_run_query:-ctrl-y}
-key_suspend=${key_suspend:-ctrl-z}
-key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
-key_shell=${key_shell:-ctrl-s}
+    # key bindings
+    local key_enter=${key_enter:-enter}
+    local key_delete=${key_delete:-ctrl-d}
+    local key_exit=${key_exit:-ctrl-c}
+    local key_parent=${key_parent:-ctrl-u}
+    local key_edit=${key_edit:-ctrl-e}
+    local key_run=${key_run:-ctrl-r}
+    local key_find=${key_find:-ctrl-f}
+    local key_run_query=${key_run_query:-ctrl-y}
+    local key_suspend=${key_suspend:-ctrl-z}
+    local key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
+    local key_shell=${key_shell:-ctrl-s}
 
-# parameters and settings
-current_dir="$1"
-init_query="$2"
-[[ $enable_color == true ]] && color_param=--ansi
+    # parameters and settings
+    local current_dir="$1"
+    local init_query="$2"
+    [[ -z "$no_color" ]] && color_param=--ansi
+    debug_var color_param
 
-# get header
-header+=$'\n'$(green "Open:")$'\t'$(white "$key_enter")$'\t'$(green "Delete:")$'\t'$(white "$key_delete")$'\t'$(green "Edit:")$'\t'$(white "$key_edit")
-header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")$'\t'$(green "Go parent:")$'\t'$(white "$key_parent")$'\t'$(green "Run:")$'\t'$(white "$key_run")
-header+=$'\n'$(green "Run Query as Command:")$'\t'$(white "$key_run_query")$'\t'$(green "Find Recursively:")$'\t'$(white "$key_find")
-header+=$'\n'$(green "Suspend:")$'\t'$(white "$key_suspend")$'\t'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")$'\t'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
-header+=$'\n'$'\n'
-header+="Directory: $current_dir"
-header+=$'\n'" "
+    # get header
+    local header
+    header+=$'\n'$(green "Open:")$'\t'$(white "$key_enter")$'\t'$(green "Delete:")$'\t'$(white "$key_delete")$'\t'$(green "Edit:")$'\t'$(white "$key_edit")
+    header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")$'\t'$(green "Go parent:")$'\t'$(white "$key_parent")$'\t'$(green "Run:")$'\t'$(white "$key_run")
+    header+=$'\n'$(green "Run Query as Command:")$'\t'$(white "$key_run_query")$'\t'$(green "Find Recursively:")$'\t'$(white "$key_find")
+    header+=$'\n'$(green "Suspend:")$'\t'$(white "$key_suspend")$'\t'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")$'\t'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
+    header+=$'\n'$'\n'
+    header+="Directory: $current_dir"
+    header+=$'\n'" "
 
-# show fzf and get result
-res=$(
-    ${=ls_command} $current_dir | \
-        fzf --prompt="Filter: " \
-            --header="$header" \
-            --print-query \
-            --query="$init_query" \
-            --height=100% \
-            $color_param \
-            --preview="$preview_command $current_dir/{-1}" \
-            --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run,$key_run_query,$key_find,$key_suspend,$key_toggle_hidden,$key_shell"
-)
+    # show fzf and get result
+    local res=$(
+        ${=ls_command} $current_dir | \
+            fzf --prompt="Filter: " \
+                --header="$header" \
+                --print-query \
+                --query="$init_query" \
+                --height=100% \
+                $color_param \
+                --preview="$preview_command $current_dir/{-1}" \
+                --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run,$key_run_query,$key_find,$key_suspend,$key_toggle_hidden,$key_shell"
+       )
 
-debug_var res
+    debug_var res
 
-# if fzf returned successfully, return
-if [[ $? = 0 ]] {
-       query=$(echo $res | head -n1)
-       key=$(echo $res | head -n2 | tail -n1)
-       item=$(echo $res | tail -n+3)
-       debug_var key
-       debug_var item
-       echo $query
-       case "$key" in
-           $key_enter)
-               if [[ $(echo $item | awk '{print $1}') == "$command_icon" ]] {
-                      echo run
-                      echo $item | awk '{$1=""; print $0}'
-                  } else {
-                      echo enter
-                      filename=$current_dir/$(echo $item | awk '{print $NF}')
-                      echo $filename
-               }
-               ;;
-           $key_parent)
-               echo cd
-               echo $(dirname $current_dir)
-               ;;
-           $key_delete)
-               echo rm
-               filename=$current_dir/$(echo $item | awk '{print $NF}')
-               echo $filename
-               ;;
-           $key_edit)
-               echo edit
-               filename=$current_dir/$(echo $item | awk '{print $NF}')
-               echo $filename
-               ;;
-           $key_run)
-               echo run_file
-               filename=$current_dir/$(echo $item | awk '{print $NF}')
-               echo $filename
-               ;;
-           $key_find)
-               echo find
-               ;;
-           $key_run_query)
-               echo run
-               echo $query
-               ;;
-           $key_suspend)
-               echo suspend
-               ;;
-           $key_toggle_hidden)
-               echo toggle_hidden
-               ;;
-           $key_shell)
-               echo shell
-               ;;
-           # $key_external_command)
-               # echo external_command
-               # filename=$current_dir/$(echo $item | awk '{print $NF}')
-               # echo $filename
-           $key_exit)
-               echo exit
-               ;;
-       esac
-   } else {
-# else return exception
-       echo exception
-   }
+    # if fzf returned successfully, return
+    if [[ $? = 0 ]] {
+           query=$(echo $res | head -n1)
+           key=$(echo $res | head -n2 | tail -n1)
+           item=$(echo $res | tail -n+3)
+           debug_var key
+           debug_var item
+           echo $query
+           case "$key" in
+               $key_enter)
+                   if [[ $(echo $item | awk '{print $1}') == "$command_icon" ]] {
+                          echo run
+                          echo $item | awk '{$1=""; print $0}'
+                      } else {
+                          echo enter
+                          filename=$current_dir/$(echo $item | awk '{print $NF}')
+                          echo $filename
+                      }
+                      ;;
+                      $key_parent)
+                          echo cd
+                          echo $(dirname $current_dir)
+                          ;;
+                      $key_delete)
+                          echo rm
+                          filename=$current_dir/$(echo $item | awk '{print $NF}')
+                          echo $filename
+                          ;;
+                      $key_edit)
+                          echo edit
+                          filename=$current_dir/$(echo $item | awk '{print $NF}')
+                          echo $filename
+                          ;;
+                      $key_run)
+                          echo run_file
+                          filename=$current_dir/$(echo $item | awk '{print $NF}')
+                          echo $filename
+                          ;;
+                      $key_find)
+                          echo find
+                          ;;
+                      $key_run_query)
+                          echo run
+                          echo $query
+                          ;;
+                      $key_suspend)
+                          echo suspend
+                          ;;
+                      $key_toggle_hidden)
+                          echo toggle_hidden
+                          ;;
+                      $key_shell)
+                          echo shell
+                          ;;
+                      # $key_external_command)
+                      # echo external_command
+                      # filename=$current_dir/$(echo $item | awk '{print $NF}')
+                      # echo $filename
+                      $key_exit)
+                          echo exit
+                          ;;
+           esac
+       } else {
+           # else return exception
+           echo exception
+       }
+}

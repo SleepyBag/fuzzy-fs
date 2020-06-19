@@ -3,6 +3,7 @@
 # for debug
 export field=history-panel
 autoload -Uz debug_var
+autoload -Uz (${=colors})
 
 # key bindings
 key_exit=${key_exit:-ctrl-c}

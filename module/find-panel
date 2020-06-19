@@ -1,0 +1,67 @@
+#!/bin/zsh
+
+function find-panel {
+    local field=find-panel
+
+    # key bindings
+    key_enter=${key_enter:-enter}
+    key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
+    key_exit=${key_exit:-ctrl-c}
+
+    # parameters and settings
+    current_dir="$1"
+    init_query="$2"
+    [[ -z "$no_color" ]] && color_param=--ansi
+
+    # get header
+    header+=$'\n'$(green "Open Directory:")$'\t'$(white "$key_enter")
+    header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")
+    header+=$'\n'$'\n'
+    header+="Directory: $current_dir"
+    header+=$'\n'" "
+
+    # show fzf and get result
+    res=$(
+        ${=find_command} $current_dir | \
+            fzf --prompt="Filter: " \
+                --header="$header" \
+                --print-query \
+                --query="$init_query" \
+                --height=100% \
+                $color_param \
+                --preview="$preview_command $current_dir/{-1}" \
+                --expect "$key_enter,$key_toggle_hidden,$key_exit"
+       )
+
+    debug_var res
+
+    # if fzf returned successfully, return
+    if [[ $? = 0 ]] {
+           query=$(echo $res | head -n1)
+           key=$(echo $res | head -n2 | tail -n1)
+           item=$(echo $res | tail -n+3)
+           debug_var key
+           debug_var item
+           echo $query
+           case "$key" in
+               $key_enter)
+                   echo cd
+                   if [[ -f $item ]] {
+                          echo $(dirname $item)
+                      } else {
+                          echo $item
+                      }
+                      ;;
+                      $key_toggle_hidden)
+                          echo toggle_hidden
+                          ;;
+                      $key_exit)
+                          echo ls
+                          ;;
+           esac
+       } else {
+           # else return exception
+           echo exception
+       }
+
+}

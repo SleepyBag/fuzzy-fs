@@ -1,55 +1,66 @@
 #!/bin/zsh
 
 # for debug
-export field=main
+local field=main
 
 export base_dir=$(cd $(dirname $0); pwd)
 autoload -Uz debug_var
 export colors=$(ls $base_dir/colors)
-export foobar=foobar
 autoload -Uz ${=colors}
+autoload -Uz find-panel ls-panel preview
+autoload find-recursively list-history list-file abspath
 
-export PATH=$PATH:$base_dir/core
+# export PATH=$PATH:$base_dir/core
 fpath+=($base_dir/core)
+fpath+=($base_dir/module)
 fpath+=($base_dir/colors)
 export fpath
 
 # determine some basic commands
 export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
-export ls_panel_command=$base_dir/module/ls-panel
-export find_panel_command=$base_dir/module/find-panel
-export history_panel_command=$base_dir/module/history-panel
+# export ls_panel_command=$base_dir/module/ls-panel
+# export find_panel_command=$base_dir/module/find-panel
+# export history_panel_command=$base_dir/module/history-panel
+export ls_panel_command=ls-panel
+export find_panel_command=find-panel
+# export history_panel_command=history-pnael
 
 # params
-while getopts "ad-:" param; do
-    case "$param" in
-        -)
-            case "$OPTARG" in
-                no-color)
-                    enable_color=false
-                    ;;
-            esac
-            ;;
-        a)
-            show_hidden=true
-            ;;
-        d)
-            debug_mode=true
-            ;;
-    esac
-done
-export enable_color=${enable_color:-true}
-export show_hidden=${show_hidden:-false}
-export debug_mode=${debug_mode:-false}
+zparseopts -no-color=no_color \
+           a=show_hidden \
+           d=debug_mode
+# while getopts "ad-:" param; do
+#     case "$param" in
+#         -)
+#             case "$OPTARG" in
+#                 no-color)
+#                     enable_color=false
+#                     ;;
+#             esac
+#             ;;
+#         a)
+#             show_hidden=true
+#             ;;
+#         d)
+#             debug_mode=true
+#             ;;
+#     esac
+# done
+# export enable_color=${enable_color:-true}
+# export show_hidden=${show_hidden:-false}
+# export debug_mode=${debug_mode:-false}
 export log_file=$base_dir/.log
 export EDITOR=${EDITOR:-vim}
 export SHELL=${SHELL:-bash}
 [[ -d $HOME/.directory_history && -z "$HISTORY_BASE" ]] && export HISTORY_BASE=$HOME/.directory_history
 
 # tunable commands
-export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
-export find_command=${fuzzy_fs_ls_command:-$base_dir/core/_find}
-export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
+# export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
+# export find_command=${fuzzy_fs_ls_command:-$base_dir/core/_find}
+# export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
+export ls_command=list-file
+export find_command=find-recursively
+export history_command=list-history
 export open_command=${fuzzy_fs_open_command:-"xdg-open"}
 
 export file_icon=${fuzzy_fs_file_icon:-}

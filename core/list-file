@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+function list-file {
+    # params
+    [[ -z "$no_color" ]] && local color_param=--color=always || local color_param=""
+    [[ -z "$show_hidden" ]] || local hidden_param=-A || local hidden_param=""
+
+    ls -l $hidden_param $color_param $* | tail -n+2 | \
+        sed "s/^d/$directory_icon  d/;s/^-/$file_icon  -/;s/^l/$link_icon  l/"
+
+    echo
+
+    ${=history_command} $*
+
+}
