@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+function list-recent-dir {
+    local field=list-rencent-dir
+    debug_var recent_dir_icon
+    cat $HOME/.z | sed "s/^/$recent_dir_icon  /;s/|[0-9]\+|[0-9]\+$//"
+}

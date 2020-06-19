@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+function open-shell () {
+    local current_path=$*
+    if [[ -z $TMUX ]] {
+           $SHELL
+       } elif {which "$TERMINAL" &> /dev/null} {
+           $TERMINAL --work-dir $current_path
+       } else {
+           tmux new-window -c "$current_path" -n "dir $(basename current_path)"
+       }
+
+}

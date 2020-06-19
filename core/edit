@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+function edit () {
+    local field=edit
+    local current_path=$1
+    local target=$2
+    debug_var current_path
+    debug_var target
+    debug_var TMUX
+    if [[ -z $TMUX ]] {
+           $EDITOR $target
+       } else {
+           tmux new-window -c "$current_path" -n "edit $(basename $target)" "$EDITOR" "$target"
+       }
+
+}
