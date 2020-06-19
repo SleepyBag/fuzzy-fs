@@ -6,14 +6,14 @@ function list-history {
     current_path="$*"
     # if you are using per-directory-history, please set $HISTORY_BASE
     if [[ ! -z "$HISTORY_BASE" ]] {
-           _per_directory_history_directory="$HISTORY_BASE${current_path:A}/history"
-           mkdir -p ${_per_directory_history_directory:h}
+        _per_directory_history_directory="$HISTORY_BASE${current_path:A}/history"
+        mkdir -p ${_per_directory_history_directory:h}
 
-           #read history in new file
-           if [[ -e $_per_directory_history_directory ]]; then
-               fc -R $_per_directory_history_directory
-           fi
-       }
+        #read history in new file
+        if [[ -e $_per_directory_history_directory ]]; then
+            fc -R $_per_directory_history_directory
+        fi
+    }
 
-       history | sed -re 's/^\s*[0-9]+\s*//' | awk '!x[$0]++' | sed "s/^/$command_icon  /"
+    history | sed -re 's/^\s*[0-9]+\s*//' | awk '!x[$0]++' | sed "s/^/$command_icon  /"
 }

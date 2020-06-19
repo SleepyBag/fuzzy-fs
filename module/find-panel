@@ -39,31 +39,30 @@ function find-panel {
 
     # if fzf returned successfully, return
     if [[ $? = 0 ]] {
-           query=$(echo $res | head -n1)
-           key=$(echo $res | head -n2 | tail -n1)
-           item=$(echo $res | tail -n+3)
-           debug_var key
-           debug_var item
-           echo $query
-           case "$key" in
-               $key_enter)
-                   echo cd
-                   if [[ -f $item ]] {
-                          echo $(dirname $item)
-                      } else {
-                          echo $item
-                      }
-                      ;;
-                      $key_toggle_hidden)
-                          echo toggle_hidden
-                          ;;
-                      $key_exit)
-                          echo ls
-                          ;;
-           esac
-       } else {
-           # else return exception
-           echo exception
-       }
-
+        query=$(echo $res | head -n1)
+        key=$(echo $res | head -n2 | tail -n1)
+        item=$(echo $res | tail -n+3)
+        debug_var key
+        debug_var item
+        echo $query
+        case "$key" in
+            $key_enter)
+                echo cd
+                if [[ -f $item ]] {
+                    echo $(dirname $item)
+                } else {
+                    echo $item
+                }
+                ;;
+            $key_toggle_hidden)
+                echo toggle_hidden
+                ;;
+            $key_exit)
+                echo ls
+                ;;
+        esac
+    } else {
+        # else return exception
+        echo exception
+    }
 }

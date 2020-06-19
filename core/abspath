@@ -2,12 +2,12 @@
 
 function abspath() {
     if [[ -d "$*" ]] {
-           dir=$*
-           echo $(cd $dir; pwd)
-       } else {
-           dir=$(cd $(dirname "$*"); pwd)
-           filename=$(basename "$*")
-           [[ dir == "/" ]] && dir=""
-           echo $dir/$filename
-       }
+        dir=$*
+        echo $(cd $dir; pwd)
+    } else {
+        dir=$(cd $(dirname "$*"); pwd)
+        filename=$(basename "$*")
+        [[ dir == "/" ]] && dir=""
+        echo $dir/$filename
+    }
 }

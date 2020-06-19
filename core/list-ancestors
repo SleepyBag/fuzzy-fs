@@ -3,7 +3,7 @@
 function list-ancestors {
     local filename=$*
     local relative=..
-    while [[ $filename != / ]] ;do
+    while [[ $filename != / ]]; do
         filename=$(dirname $filename)
         echo $ancestor_icon"  "$relative$'\t'$filename
         relative=$relative.

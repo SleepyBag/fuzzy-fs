@@ -8,9 +8,8 @@ function edit () {
     debug_var target
     debug_var TMUX
     if [[ -z $TMUX ]] {
-           $EDITOR $target
-       } else {
-           tmux new-window -c "$current_path" -n "edit $(basename $target)" "$EDITOR" "$target"
-       }
-
+        $EDITOR $target
+    } else {
+        tmux new-window -c "$current_path" -n "edit $(basename $target)" "$EDITOR" "$target"
+    }
 }

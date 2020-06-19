@@ -5,6 +5,9 @@ function list-recent-dir {
     debug_var recent_dir_icon
     # if you use z to jump between directories
     if [[ -f $HOME/.z ]] {
-           cat $HOME/.z | sed "s/^/$recent_dir_icon  /;s/|[0-9]\+|[0-9]\+$//"
+        cat $HOME/.z | sed "s/^/$recent_dir_icon  /;s/|[0-9]\+|[0-9]\+$//"
+    }
+    if [[ -f $HOME/.local/share/autojump/autojump.txt ]] {
+        cat $HOME/.local/share/autojump/autojump.txt | cut -f2 | sed "s/^/$recent_dir_icon  /"
     }
 }

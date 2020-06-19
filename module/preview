@@ -6,18 +6,18 @@ zparseopts -no-color=no_color \
 [[ -z "$no_color" ]] && color_param=--color=always
 
 if {which bat &> /dev/null} {
-        less_command="bat -p $color_param"
-    } elif {which less &> /dev/null} {
-        less_command="less"
-    } else {
-        less_command="more"
-    }
+    less_command="bat -p $color_param"
+} elif {which less &> /dev/null} {
+    less_command="less"
+} else {
+    less_command="more"
+}
 
-    filename=$argv[$ARGC]
-    if [[ -d "$filename" ]] {
-            echo "$(basename $filename)" is a directory:
-            echo
-            ls -la $color_param "$filename"
-        } elif [[ -f "$filename" ]] {
-            ${=less_command} "$filename"
-        }
+filename=$argv[$ARGC]
+if [[ -d "$filename" ]] {
+    echo "$(basename $filename)" is a directory:
+    echo
+    ls -la $color_param "$filename"
+} elif [[ -f "$filename" ]] {
+    ${=less_command} "$filename"
+}
