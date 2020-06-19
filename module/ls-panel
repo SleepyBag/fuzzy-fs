@@ -14,7 +14,7 @@ function ls-panel {
     local key_find=${key_find:-ctrl-f}
     local key_run_query=${key_run_query:-ctrl-y}
     local key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
-    local key_shell=${key_shell:-ctrl-s}
+    local key_shell=${key_shell:-ctrl-o}
 
     # parameters and settings
     local current_dir="$1"
@@ -47,6 +47,7 @@ function ls-panel {
         list-all $current_dir | \
             fzf --prompt="Filter: " \
                 --no-sort \
+                --no-multi \
                 --header="$header" \
                 --print-query \
                 --query="$init_query" \

@@ -25,6 +25,7 @@ function find-panel {
     res=$(
         ${=find_command} $current_dir | \
             fzf --prompt="Filter: " \
+                --no-multi \
                 --header="$header" \
                 --print-query \
                 --query="$init_query" \
