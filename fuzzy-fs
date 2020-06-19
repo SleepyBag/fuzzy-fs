@@ -7,12 +7,9 @@ export base_dir=$(cd $(dirname $0); pwd)
 autoload -Uz debug_var
 export colors=$(ls $base_dir/colors)
 autoload -Uz ${=colors}
-# autoload -Uz find-panel ls-panel preview
-# autoload -Uz find-recursively list-history list-file abspath list-ancestors open-shell edit preview list-recent-file
 autoload -Uz $(ls $base_dir/core)
 autoload -Uz $(ls $base_dir/module)
 
-# export PATH=$PATH:$base_dir/core
 fpath+=($base_dir/core)
 fpath+=($base_dir/module)
 fpath+=($base_dir/colors)
@@ -20,46 +17,19 @@ export fpath
 
 # determine some basic commands
 export preview_command=${fuzzy_fs_preview_command:-$base_dir/module/preview}
-# export ls_panel_command=$base_dir/module/ls-panel
-# export find_panel_command=$base_dir/module/find-panel
-# export history_panel_command=$base_dir/module/history-panel
 export ls_panel_command=ls-panel
 export find_panel_command=find-panel
-# export history_panel_command=history-pnael
 
 # params
 zparseopts -no-color=no_color \
            a=show_hidden \
            d=debug_mode
-# while getopts "ad-:" param; do
-#     case "$param" in
-#         -)
-#             case "$OPTARG" in
-#                 no-color)
-#                     enable_color=false
-#                     ;;
-#             esac
-#             ;;
-#         a)
-#             show_hidden=true
-#             ;;
-#         d)
-#             debug_mode=true
-#             ;;
-#     esac
-# done
-# export enable_color=${enable_color:-true}
-# export show_hidden=${show_hidden:-false}
-# export debug_mode=${debug_mode:-false}
 export log_file=$base_dir/.log
 export EDITOR=${EDITOR:-vim}
 export SHELL=${SHELL:-bash}
 [[ -d $HOME/.directory_history && -z "$HISTORY_BASE" ]] && export HISTORY_BASE=$HOME/.directory_history
 
 # tunable commands
-# export ls_command=${fuzzy_fs_ls_command:-$base_dir/core/_ls}
-# export find_command=${fuzzy_fs_ls_command:-$base_dir/core/_find}
-# export history_command=${fuzzy_fs_history_command:-$base_dir/core/_history}
 export ls_command=${fuzzy_fs_ls_command:-list-file}
 export ls_recent_command=${fuzzy_fs_ls_recent_command:-list-recent-dir}
 export find_command=${fuzzy_fs_find_command:-find-recursively}
@@ -103,13 +73,6 @@ while [[ $res_command != exit ]] ; do
     debug_var res_command
     debug_var target
     case "$res_command" in
-        # enter)
-        #     if [[ -d $target ]] {
-        #            current_path=$target
-        #        } else {
-        #            zsh -c "${=open_command} $target" &> /dev/null
-        #        }
-        #        ;;
         open)
             zsh -c "${=open_command} $target" &> /dev/null
             ;;
@@ -137,23 +100,10 @@ while [[ $res_command != exit ]] ; do
         shell)
             open-shell "$current_path"
             ;;
-        # suspend)
-        #     suspend
-        #     ;;
         toggle_hidden)
             [[ $show_hidden = true ]] && show_hidden=false || show_hidden=true
             pre_query=$query
             ;;
-        # run)
-        #     hist_res=$($history_panel_command $current_path)
-        #     debug_var hist_res
-        #     if [[ $(echo $hist_res | head -n2 | tail -n1) != exit ]] {
-        #            cmd=$(echo $hist_res | tail -n+3 )
-        #            debug_var cmd
-        #            export F=$target
-        #            zsh -c "cd $current_path; $cmd"
-        #        }
-        #        ;;
         exit)
             ;;
         *)

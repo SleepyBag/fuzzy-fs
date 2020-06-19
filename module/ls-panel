@@ -3,8 +3,6 @@
 function ls-panel {
     # for debug
     local field=ls-panel
-    # autoload -Uz debug_var
-    # autoload -Uz ${=colors}
 
     # key bindings
     local key_enter=${key_enter:-enter}
@@ -15,7 +13,6 @@ function ls-panel {
     local key_run=${key_run:-ctrl-r}
     local key_find=${key_find:-ctrl-f}
     local key_run_query=${key_run_query:-ctrl-y}
-    # local key_suspend=${key_suspend:-ctrl-z}
     local key_toggle_hidden=${key_toggle_hidden:-ctrl-a}
     local key_shell=${key_shell:-ctrl-s}
 
@@ -30,7 +27,6 @@ function ls-panel {
     header+=$'\n'$(green "Open:")$'\t'$(white "$key_enter")$'\t'$(green "Delete:")$'\t'$(white "$key_delete")$'\t'$(green "Edit:")$'\t'$(white "$key_edit")
     header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")$'\t'$(green "Go parent:")$'\t'$(white "$key_parent")$'\t'$(green "Run:")$'\t'$(white "$key_run")
     header+=$'\n'$(green "Run Query as Command:")$'\t'$(white "$key_run_query")$'\t'$(green "Find Recursively:")$'\t'$(white "$key_find")
-    # header+=$'\n'$(green "Suspend:")$'\t'$(white "$key_suspend")$'\t'
     header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")$'\t'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
     header+=$'\n'$'\n'
     header+="$(yellow Directory:) $(red $current_dir)"
@@ -119,19 +115,12 @@ function ls-panel {
                    echo run
                    echo $query
                    ;;
-               # $key_suspend)
-               #     echo suspend
-               #     ;;
                $key_toggle_hidden)
                    echo toggle_hidden
                    ;;
                $key_shell)
                    echo shell
                    ;;
-               # $key_external_command)
-               # echo external_command
-               # filename=$current_dir/$(echo $item | awk '{print $NF}')
-               # echo $filename
                $key_exit)
                    echo exit
                    ;;
