@@ -3,7 +3,7 @@
 # for debug
 local field=main
 
-export base_dir=$(readlink $0 | xargs dirname)
+export base_dir=$(readlink -f $0 | xargs dirname)
 export log_file=$base_dir/.log
 
 autoload -Uz debug_var
@@ -55,6 +55,7 @@ export open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
 
 # tunable icons
 export file_icon=${FUZZY_FS_FILE_ICON:-}
+export file_icon=${FUZZY_FS_LINK_ICON:-}
 export ancestor_icon=${FUZZY_FS_ANCESTOR_ICON:-}
 export directory_icon=${FUZZY_FS_DIRECTORY_ICON:-}
 export command_icon=${FUZZY_FS_COMMAND_ICON:-}
