@@ -7,28 +7,35 @@ function ls-panel {
     # key bindings
     local key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
     local key_delete=${FUZZY_FS_KEY_DELETE:-Ctrl-D}
-    local key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-C}
+    local key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-Q}
     local key_parent=${FUZZY_FS_KEY_PARENT:-Ctrl-U}
-    local key_edit=${FUZZY_FS_KEY_EDIT:-Ctrl-E}
+    local key_edit=${FUZZY_FS_KEY_EDIT:-Ctrl-O}
     # local key_run=${FUZZY_FS_KEY_RUN:-Ctrl-R}
     local key_find=${FUZZY_FS_KEY_FIND:-Ctrl-F}
     local key_run_query=${FUZZY_FS_KEY_RUN_QUERY:-Ctrl-Y}
     local key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
-    local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-O}
+    local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-I}
 
     # parameters and settings
     local current_dir="$1"
     local init_query="$2"
-    [[ -z "$no_color" ]] && color_param=--ansi
+    [[ -z "$no_color" ]] && local color_param=--ansi
     debug_var color_param
 
     # get header
     local header
-    header+=$'\n'$(green "Open:")$'\t'$(white "$key_enter")$'\t'$(green "Delete:")$'\t'$(white "$key_delete")$'\t'$(green "Edit:")$'\t'$(white "$key_edit")
-    header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")$'\t'$(green "Go parent:")$'\t'$(white "$key_parent")
-    header+=$'\n'$(green "Run Query as Command:")$'\t'$(white "$key_run_query")$'\t'$(green "Find Recursively:")$'\t'$(white "$key_find")
-    header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")$'\t'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
-    header+=$'\n'$'\n'
+    if [[ -z "$no_header" ]] {
+        header+=$'\n'$(green "Open:")$'\t'$(white "$key_enter")$'\t'$(green "Delete:")$'\t'$(white "$key_delete")$'\t'$(green "Edit:")$'\t'$(white "$key_edit")
+        header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")
+        header+=$'\n'$(green "Go parent:")$'\t'$(white "$key_parent")
+        header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")
+        header+=$'\n'$(green "Find Recursively:")$'\t'$(white "$key_find")
+        header+=$'\n'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
+        header+=$'\n'$(green "Run Query as Command:")$'\t'$(white "$key_run_query")
+        header+=$'\n'$'\n'
+    } else {
+        header=""
+    }
     header+="$(yellow Directory:) $(red $current_dir)"
     header+=$'\n'" "
 
@@ -42,10 +49,12 @@ function ls-panel {
         ${=ls_recent_command}
     }
 
+    debug_var no_color
     # show fzf and get result
     local res=$(
         list-all $current_dir | \
             fzf --prompt="Filter: " \
+                $no_color \
                 --no-sort \
                 --no-multi \
                 --header="$header" \
@@ -53,7 +62,8 @@ function ls-panel {
                 --query="$init_query" \
                 --height=100% \
                 $color_param \
-                --preview="$preview_command $current_dir/{-1}" \
+                --preview="$preview_command $no_color $current_dir/{-1}" \
+                --bind "Ctrl-C:clear-query" \
                 --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell"
        )
 
@@ -61,9 +71,9 @@ function ls-panel {
 
     # if fzf returned successfully, return
     if [[ $? = 0 ]] {
-        query=$(echo $res | head -n1)
-        key=$(echo $res | head -n2 | tail -n1)
-        item=$(echo $res | tail -n+3)
+        local query=$(echo $res | head -n1)
+        local key=$(echo $res | head -n2 | tail -n1)
+        local item=$(echo $res | tail -n+3)
         debug_var key
         debug_var item
         echo $query
@@ -81,13 +91,14 @@ function ls-panel {
                         ;;
                     $file_icon)
                         echo open
-                        filename=$current_dir/$(echo $item | awk '{print $NF}')
+                        local filename=$current_dir/$(echo $item | awk '{print $NF}')
                         echo $filename
                         ;;
                     $ancestor_icon|$recent_dir_icon)
                         echo cd
-                        filename=$(echo $item | awk '{print $NF}')
+                        local filename=$(echo $item | awk '{print $NF}')
                         echo $filename
+                        ;;
                 esac
                 ;;
             $key_parent)
@@ -96,12 +107,12 @@ function ls-panel {
                 ;;
             $key_delete)
                 echo rm
-                filename=$current_dir/$(echo $item | awk '{print $NF}')
+                local filename=$current_dir/$(echo $item | awk '{print $NF}')
                 echo $filename
                 ;;
             $key_edit)
                 echo edit
-                filename=$current_dir/$(echo $item | awk '{print $NF}')
+                local filename=$current_dir/$(echo $item | awk '{print $NF}')
                 echo $filename
                 ;;
             # $key_run)
@@ -121,6 +132,19 @@ function ls-panel {
                 ;;
             $key_shell)
                 echo shell
+                case $(echo $item | awk '{print $1}') in
+                    $ancestor_icon|$recent_dir_icon)
+                        local filename=$(echo $item | awk '{print $NF}')
+                        if [[ -f $filename ]] {
+                            echo $(dirname $filename)
+                        } else {
+                            echo $filename
+                        }
+                        ;;
+                    $command_icon|$directory_icon|$file_icon)
+                        echo $current_dir
+                        ;;
+                esac
                 ;;
             $key_exit)
                 echo exit

@@ -4,25 +4,34 @@ function find-panel {
     local field=find-panel
 
     # key bindings
-    key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
-    key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
-    key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-C}
+    local key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
+    local key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
+    local key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-Q}
+    local key_edit=${FUZZY_FS_KEY_EDIT:-Ctrl-O}
+    local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-I}
 
     # parameters and settings
-    current_dir="$1"
-    init_query="$2"
-    [[ -z "$no_color" ]] && color_param=--ansi
+    local current_dir="$1"
+    local init_query="$2"
+    [[ -z "$no_color" ]] && local color_param=--ansi
 
     # get header
-    header+=$'\n'$(green "Open Directory:")$'\t'$(white "$key_enter")
-    header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")
-    header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")
-    header+=$'\n'$'\n'
+    if [[ -z "$no_header" ]] {
+        local header
+        header+=$'\n'$(green "Open Directory:")$'\t'$(white "$key_enter")
+        header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")
+        header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")
+        header+=$'\n'$(green "Edit:")$'\t'$(white "$key_edit")
+        header+=$'\n'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
+        header+=$'\n'$'\n'
+    } else {
+        header=""
+    }
     header+="Directory: $current_dir"
     header+=$'\n'" "
 
     # show fzf and get result
-    res=$(
+    local res=$(
         ${=find_command} $current_dir | \
             fzf --prompt="Filter: " \
                 --no-multi \
@@ -32,16 +41,17 @@ function find-panel {
                 --height=100% \
                 $color_param \
                 --preview="$preview_command $current_dir/{-1}" \
-                --expect "$key_enter,$key_toggle_hidden,$key_exit"
+                --bind "Ctrl-C:clear-query" \
+                --expect "$key_enter,$key_toggle_hidden,$key_exit,$key_shell,$key_edit"
        )
 
     debug_var res
 
     # if fzf returned successfully, return
     if [[ $? = 0 ]] {
-        query=$(echo $res | head -n1)
-        key=$(echo $res | head -n2 | tail -n1)
-        item=$(echo $res | tail -n+3)
+        local query=$(echo $res | head -n1)
+        local key=$(echo $res | head -n2 | tail -n1)
+        local item=$(echo $res | tail -n+3)
         debug_var key
         debug_var item
         echo $query
@@ -59,6 +69,20 @@ function find-panel {
                 ;;
             $key_exit)
                 echo ls
+                ;;
+            $key_edit)
+                echo edit
+                local filename=$item
+                echo $filename
+                ;;
+            $key_shell)
+                echo shell
+                local filename=$item
+                if [[ -f $filename ]] {
+                    echo $(dirname $filename)
+                } else {
+                    echo $filename
+                }
                 ;;
         esac
     } else {
