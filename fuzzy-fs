@@ -3,7 +3,7 @@
 # for debug
 local field=main
 
-export base_dir=$(cd $(dirname $0); pwd)
+export base_dir=$(readlink $0 | xargs dirname)
 export log_file=$base_dir/.log
 
 autoload -Uz debug_var
