@@ -79,22 +79,22 @@ function ls-panel {
         echo $query
         case "$key" in
             $key_enter)
-                case $(echo $item | awk '{print $1}') in
-                    $command_icon)
+                case "$item" in
+                    "$command_icon"*)
                         echo run
-                        echo $item | awk '{$1=""; print $0}'
+                        echo $item[$(($#command_icon+1)),-1]
                         ;;
-                    $directory_icon)
+                    "$directory_icon"*)
                         echo cd
                         filename=$current_dir/$(echo $item | awk '{print $NF}')
                         echo $filename
                         ;;
-                    $file_icon)
+                    "$file_icon"*)
                         echo open
                         local filename=$current_dir/$(echo $item | awk '{print $NF}')
                         echo $filename
                         ;;
-                    $ancestor_icon|$recent_dir_icon)
+                    "$ancestor_icon"*|"$recent_dir_icon"*)
                         echo cd
                         local filename=$(echo $item | awk '{print $NF}')
                         echo $filename
@@ -132,16 +132,21 @@ function ls-panel {
                 ;;
             $key_shell)
                 echo shell
-                case $(echo $item | awk '{print $1}') in
-                    $ancestor_icon|$recent_dir_icon)
+                debug "processing key-shell..."
+                case $item in
+                    "$ancestor_icon"*|"$recent_dir_icon"*)
+                        debug "open shell in the pointed target"
                         local filename=$(echo $item | awk '{print $NF}')
+                        debug_var filename
                         if [[ -f $filename ]] {
                             echo $(dirname $filename)
                         } else {
                             echo $filename
                         }
                         ;;
-                    $command_icon|$directory_icon|$file_icon)
+                    "$command_icon"*|"$directory_icon"*|"$file_icon"*)
+                        debug "open shell in the current path"
+                        debug_var current_dir
                         echo $current_dir
                         ;;
                 esac
