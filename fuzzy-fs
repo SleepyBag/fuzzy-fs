@@ -8,15 +8,27 @@ local field=main
 export base_dir=$(readlink -f $0 | xargs dirname)
 export log_file=$base_dir/.log
 
-autoload -Uz debug_var
-autoload -Uz $(ls $base_dir/colors)
-autoload -Uz $(ls $base_dir/core)
-autoload -Uz $(ls $base_dir/module)
-
-fpath+=($base_dir/core)
-fpath+=($base_dir/module)
-fpath+=($base_dir/colors)
 export fpath
+function use {
+    for dir ($argv) {
+        dir=$base_dir/$dir
+        fpath+=($dir)
+        autoload -Uz $(ls -p $dir | grep -v /)
+    }
+}
+
+use function
+use module
+use module/ancestors
+use module/find
+use module/history
+use module/ls
+use module/recent-dir
+use util
+use util/colors
+use util/debug
+
+echo $fpath
 
 # params
 zparseopts -D \
@@ -127,6 +139,7 @@ while [[ $res_command != exit ]] ; do
             ;;
         cd)
             current_path=$target
+            add-recent-dir $current_path
             [[ "$next_panel" == "find-panel" ]] && next_panel=ls-panel
             ;;
         rm)

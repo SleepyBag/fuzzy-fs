@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+function list-recent-dir {
+    local field=list-rencent-dir
+    debug_var recent_dir_icon
+    # if you use z to jump between directories
+    _z_data=${_Z_DATA:-$HOME/.z}
+    if [[ -f $_z_data ]] {
+        # cat $HOME/.z | sed "s/^/$recent_dir_icon  /;s/|[0-9]\+|[0-9]\+$//"
+        _z -l 2>&1 | tac | awk '{for(i=2; i<=NF; ++i) printf "%s ", $i; print ""}' | sed "s/^/$recent_dir_icon  /"
+    }
+    if {which autojump &> /dev/null} {
+        autojump -s | sed -E '/^___/q;s/[0-9]*\.[0-9]*:[[:space:]]*//;' | head -n-1 | sed "s/^/$recent_dir_icon  /"
+        # cat $HOME/.local/share/autojump/autojump.txt | cut -f2 | sed "s/^/$recent_dir_icon  /"
+    }
+}

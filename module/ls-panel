@@ -40,13 +40,13 @@ function ls-panel {
     header+=$'\n'" "
 
     function list-all () {
-        ${=ls_command} $*
+        list-file $*
         echo ""
-        ${=ancestors_command} $*
+        list-ancestors $*
         echo ""
-        ${=history_command} $*
+        list-history $*
         echo ""
-        ${=ls_recent_command}
+        list-recent-dir
     }
 
     debug_var no_color
