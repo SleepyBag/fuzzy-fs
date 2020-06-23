@@ -81,12 +81,12 @@ export ancestors_command=${FUZZY_FS_ANCESTORS_COMMAND:-list-ancestors}
 export open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
 
 # tunable icons
-export file_icon=${FUZZY_FS_FILE_ICON:-}
-export file_icon=${FUZZY_FS_LINK_ICON:-}
-export ancestor_icon=${FUZZY_FS_ANCESTOR_ICON:-}
-export directory_icon=${FUZZY_FS_DIRECTORY_ICON:-}
-export command_icon=${FUZZY_FS_COMMAND_ICON:-}
-export recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:-}
+export file_icon=${FUZZY_FS_FILE_ICON:- fl}
+export link_icon=${FUZZY_FS_LINK_ICON:- lk}
+export ancestor_icon=${FUZZY_FS_ANCESTOR_ICON:- up}
+export directory_icon=${FUZZY_FS_DIRECTORY_ICON:- dr}
+export command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
+export recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
 # icons cannot be empty because they are neccessary to determine the item type
 function check_empty () {
