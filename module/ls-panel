@@ -17,7 +17,7 @@ function ls-panel {
     local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-I}
 
     # parameters and settings
-    local current_dir="$1"
+    local pwd="$1"
     local init_query="$2"
     [[ -z "$no_color" ]] && local color_param=--ansi
     debug_var color_param
@@ -36,7 +36,7 @@ function ls-panel {
     } else {
         header=""
     }
-    header+="$(yellow Directory:) $(red $current_dir)"
+    header+="$(yellow Directory:) $(red $pwd)"
     header+=$'\n'" "
 
     function list-all () {
@@ -52,7 +52,7 @@ function ls-panel {
     debug_var no_color
     # show fzf and get result
     local res=$(
-        list-all $current_dir | \
+        list-all $pwd | \
             fzf --prompt="Filter: " \
                 $no_color \
                 --no-sort \
@@ -62,7 +62,7 @@ function ls-panel {
                 --query="$init_query" \
                 --height=100% \
                 $color_param \
-                --preview="$preview_command $no_color $current_dir/{-1}" \
+                --preview="$preview_command $no_color $pwd/{-1}" \
                 --bind "Ctrl-C:clear-query" \
                 --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell"
        )
@@ -86,12 +86,12 @@ function ls-panel {
                         ;;
                     "$directory_icon"*)
                         echo cd
-                        filename=$current_dir/$(echo $item | awk '{print $NF}')
+                        filename=$pwd/$(echo $item | awk '{print $NF}')
                         echo $filename
                         ;;
                     "$file_icon"*)
                         echo open
-                        local filename=$current_dir/$(echo $item | awk '{print $NF}')
+                        local filename=$pwd/$(echo $item | awk '{print $NF}')
                         echo $filename
                         ;;
                     "$ancestor_icon"*|"$recent_dir_icon"*)
@@ -103,21 +103,21 @@ function ls-panel {
                 ;;
             $key_parent)
                 echo cd
-                echo $(dirname $current_dir)
+                echo $(dirname $pwd)
                 ;;
             $key_delete)
                 echo rm
-                local filename=$current_dir/$(echo $item | awk '{print $NF}')
+                local filename=$pwd/$(echo $item | awk '{print $NF}')
                 echo $filename
                 ;;
             $key_edit)
                 echo edit
-                local filename=$current_dir/$(echo $item | awk '{print $NF}')
+                local filename=$pwd/$(echo $item | awk '{print $NF}')
                 echo $filename
                 ;;
             # $key_run)
             #     echo run_file
-            #     filename=$current_dir/$(echo $item | awk '{print $NF}')
+            #     filename=$pwd/$(echo $item | awk '{print $NF}')
             #     echo $filename
             #     ;;
             $key_find)
@@ -146,8 +146,8 @@ function ls-panel {
                         ;;
                     "$command_icon"*|"$directory_icon"*|"$file_icon"*)
                         debug "open shell in the current path"
-                        debug_var current_dir
-                        echo $current_dir
+                        debug_var pwd
+                        echo $pwd
                         ;;
                 esac
                 ;;

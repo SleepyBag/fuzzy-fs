@@ -1,24 +1,23 @@
 #!/bin/zsh
 
 function find-recursively {
-    field=find-recursively
+    local field=find-recursively
     # params
     [[ -z "$no_color" ]] && color_param=--color=always
 
-    current_path="$*"
-    debug_var current_path
+    local pwd="$*"
 
     if {which fd &> /dev/null} {
         if [[ -z "$show_hidden" ]] {
-            fd $color_param -I . "$current_path"
+            fd $color_param -I . "$pwd"
         } else {
-            fd $color_param -IH . "$current_path"
+            fd $color_param -IH . "$pwd"
         }
     } else {
         if [[ -z "$show_hidden" ]] {
-            find "$current_path" -not -path '*/\.*'
+            find "$pwd" -not -path '*/\.*'
         } else {
-            find "$current_path"
+            find "$pwd"
         }
     }
 }

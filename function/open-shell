@@ -1,11 +1,11 @@
 #!/bin/zsh
 
 function open-shell () {
-    local current_path=$*
+    local pwd=$*
     if [[ ! -z $TMUX ]] {
-        tmux new-window -c "$current_path" -n "dir $(basename $current_path)"
+        tmux new-window -c "$pwd" -n "dir $(basename $pwd)"
     } elif {which "$TERMINAL" &> /dev/null} {
-        $TERMINAL --workdir $current_path
+        $TERMINAL --workdir $pwd
     } else {
         $SHELL
     }

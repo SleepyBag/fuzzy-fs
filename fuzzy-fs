@@ -1,5 +1,6 @@
-#!/bin/zsh
+#!/bin/zsh -i
 
+export HISTFILE=$HOME/.zsh_history
 local version=1.0
 
 # for debug
@@ -28,8 +29,6 @@ use util
 use util/colors
 use util/debug
 
-echo $fpath
-
 # params
 zparseopts -D \
            -no-header=no_header \
@@ -41,10 +40,8 @@ zparseopts -D \
            d=debug_mode \
            -help=help \
            h=help
-current_path="$*"
-debug_var current_path
-debug_var show_hidden
-debug_var debug_mode
+init_path="$*"
+init_path=${init_path:-.}
 
 if [[ ! -z $help ]] {
     cat <<EOF
@@ -81,6 +78,7 @@ if [[ -z $PAGER ]] {
         PAGER=more
     }
 }
+# determine if you are using per-directory-history
 [[ -d $HOME/.directory_history && -z "$HISTORY_BASE" ]] && export HISTORY_BASE=$HOME/.directory_history
 
 # tunable commands
@@ -114,14 +112,17 @@ check_empty directory_icon
 check_empty command_icon
 check_empty recent_dir_icon
 
+init_path=$(abspath $init_path)
+cd $init_path
 next_panel=ls-panel
+# if you are using per-directory-history, init directory
+if [[ ! -z "$HISTORY_BASE" ]] {
+    per-directory-history-change-directory "$init_path" ""
+}
 # main loop
 while [[ $res_command != exit ]] ; do
-    current_path=$(abspath $current_path)
-    debug_var current_path
-
     # show panel
-    res=$($next_panel $current_path $pre_query)
+    res=$($next_panel $PWD $pre_query)
 
     # parse result
     query=$(echo $res | head -n1)
@@ -138,20 +139,25 @@ while [[ $res_command != exit ]] ; do
             zsh -c "${=open_command} $target" &> /dev/null
             ;;
         cd)
-            current_path=$target
-            add-recent-dir $current_path
+            old_path=$PWD
+            cd $target
+            # if you are using z or autojump
+            add-recent-dir $PWD
+            # if you are using per-directory-history
+            if [[ ! -z "$HISTORY_BASE" ]] {
+                per-directory-history-change-directory "$PWD" "$old_path"
+            }
             [[ "$next_panel" == "find-panel" ]] && next_panel=ls-panel
             ;;
         rm)
             rm -ir $target
             ;;
         edit)
-            debug_var current_path
-            debug_var target
-            edit "$current_path" "$target"
+            edit "$PWD" "$target"
             ;;
         run)
-            zsh -c "cd $current_path; $target" | $PAGER
+            add-history "$target"
+            eval $target
             ;;
         find)
             next_panel=find-panel
@@ -175,3 +181,5 @@ while [[ $res_command != exit ]] ; do
             ;;
     esac
 done
+
+exit
