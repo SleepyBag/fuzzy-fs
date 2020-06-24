@@ -1,0 +1,57 @@
+: 1592282240:0;ls
+: 1592922898:0;vim $HISTORY_BASE/home/qmxue/history
+: 1592922919:0;print -Sr -- wouiyigeffuwjd
+: 1592922919:0;wouiyigeffuwjd
+: 1592922959:0;vim $HISTORY_BASE/home/qmxue/history
+: 1592922968:0;vim $HOME/.zsh_history
+: 1592922972:0;src
+: 1592923236:0;./fuzzy-fs -d 
+: 1592923268:0;vim $HOME/.zsh_history
+: 1592923307:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923315:0;./fuzzy-fs -d 
+: 1592923324:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923383:0;fc -A .hist
+: 1592923386:0;vim .hist
+: 1592923400:0;rm .hist
+: 1592923401:0;src
+: 1592400902:0;mkdir /tmp/foo
+: 1592923268:0;vim $HOME/.zsh_history
+: 1592923307:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923324:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923383:0;fc -A .hist
+: 1592923386:0;vim .hist
+: 1592923400:0;rm .hist
+: 1592923401:0;src
+: 1592923405:0;ls
+: 1592923408:0;fc -A .hist
+: 1592282240:0;ls
+: 1592922898:0;vim $HISTORY_BASE/home/qmxue/history
+: 1592922919:0;print -Sr -- wouiyigeffuwjd
+: 1592922919:0;wouiyigeffuwjd
+: 1592922959:0;vim $HISTORY_BASE/home/qmxue/history
+: 1592922968:0;vim $HOME/.zsh_history
+: 1592922972:0;src
+: 1592923236:0;./fuzzy-fs -d 
+: 1592923268:0;vim $HOME/.zsh_history
+: 1592923307:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923315:0;./fuzzy-fs -d 
+: 1592923324:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923383:0;fc -A .hist
+: 1592923386:0;vim .hist
+: 1592923400:0;rm .hist
+: 1592923401:0;src
+: 1592923405:0;ls
+: 1592923408:0;fc -A .hist
+: 1592923410:0;vim .hist
+: 1592400902:0;mkdir /tmp/foo
+: 1592923268:0;vim $HOME/.zsh_history
+: 1592923307:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923324:0;vim /home/qmxue/.directory_history/home/qmxue/open-source/fuzzy-fs/history
+: 1592923383:0;fc -A .hist
+: 1592923386:0;vim .hist
+: 1592923400:0;rm .hist
+: 1592923401:0;src
+: 1592923405:0;ls
+: 1592923408:0;fc -A .hist
+: 1592923410:0;vim .hist
+: 1592923421:0;fc -A .hist

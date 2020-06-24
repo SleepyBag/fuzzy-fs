@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+function add-history() {
+    local field=add-history
+    local cmd="$*"
+    cmd="${cmd%%$'\n'}"
+    if [[ -o hist_ignore_space ]] && [[ "$cmd" == \ * ]] {
+        true
+    } elif [[ "$_per_directory_history_is_global" == false ]] {
+        print -Sr -- "$cmd"
+        fc -AI $HISTFILE
+    } else {
+        echo $cmd
+        print -Sr -- "$cmd"
+        fc -AI $_per_directory_history_directory
+    }
+}

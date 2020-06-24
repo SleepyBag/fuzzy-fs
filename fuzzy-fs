@@ -113,11 +113,12 @@ check_empty command_icon
 check_empty recent_dir_icon
 
 init_path=$(abspath $init_path)
+pre_path=$PWD
 cd $init_path
 next_panel=ls-panel
 # if you are using per-directory-history, init directory
-if [[ ! -z "$HISTORY_BASE" ]] {
-    per-directory-history-change-directory "$init_path" ""
+if [[ ! -z "$_per_directory_history_is_global" ]] {
+    _per-directory-history-change-directory "$init_path" "$pre_path"
 }
 # main loop
 while [[ $res_command != exit ]] ; do
@@ -144,8 +145,8 @@ while [[ $res_command != exit ]] ; do
             # if you are using z or autojump
             add-recent-dir $PWD
             # if you are using per-directory-history
-            if [[ ! -z "$HISTORY_BASE" ]] {
-                per-directory-history-change-directory "$PWD" "$old_path"
+            if [[ ! -z "$_per_directory_history_is_global" ]] {
+                _per-directory-history-change-directory "$PWD" "$old_path"
             }
             [[ "$next_panel" == "find-panel" ]] && next_panel=ls-panel
             ;;
@@ -172,6 +173,9 @@ while [[ $res_command != exit ]] ; do
         toggle_hidden)
             [[ -z "$show_hidden" ]] && show_hidden=(-a) || show_hidden=()
             pre_query=$query
+            ;;
+        toggle_per_directory_history)
+            toggle-per-directory-history
             ;;
         exit)
             ;;
