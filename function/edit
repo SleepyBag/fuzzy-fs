@@ -1,12 +1,12 @@
 #!/bin/zsh
 
-function edit () {
+function edit {
     local field=edit
     local pwd=$1
     local target=$2
-    if [[ -z $TMUX ]] {
+    if [[ -z $TMUX ]]; then
         $EDITOR $target
-    } else {
+    else
         tmux new-window -c "$pwd" -n "edit $(basename $target)" "$EDITOR" "$target"
-    }
+    fi
 }

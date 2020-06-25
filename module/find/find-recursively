@@ -7,17 +7,17 @@ function find-recursively {
 
     local pwd="$*"
 
-    if {which fd &> /dev/null} {
-        if [[ -z "$show_hidden" ]] {
+    if {which fd &> /dev/null}; then
+        if [[ -z "$show_hidden" ]]; then
             fd $color_param -I . "$pwd"
-        } else {
+        else
             fd $color_param -IH . "$pwd"
-        }
-    } else {
-        if [[ -z "$show_hidden" ]] {
+        fi
+    else
+        if [[ -z "$show_hidden" ]]; then
             find "$pwd" -not -path '*/\.*'
-        } else {
+        else
             find "$pwd"
-        }
-    }
+        fi
+    fi
 }

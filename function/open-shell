@@ -1,12 +1,12 @@
 #!/bin/zsh
 
-function open-shell () {
+function open-shell {
     local pwd=$*
-    if [[ ! -z $TMUX ]] {
+    if [[ ! -z $TMUX ]]; then
         tmux new-window -c "$pwd" -n "dir $(basename $pwd)"
-    } elif {which "$TERMINAL" &> /dev/null} {
+    elif {which "$TERMINAL" &> /dev/null}; then
         $TERMINAL --workdir $pwd
-    } else {
+    else
         $SHELL
-    }
+    fi
 }

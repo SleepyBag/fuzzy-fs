@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-function debug() {
+function debug {
     echo $field :: $* >> $log_file
 }

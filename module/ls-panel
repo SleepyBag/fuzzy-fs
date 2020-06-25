@@ -15,9 +15,9 @@ function ls-panel {
     local key_run_query=${FUZZY_FS_KEY_RUN_QUERY:-Ctrl-Y}
     local key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
     local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-I}
-    if [[ ! -z "$_per_directory_history_is_global" ]] {
+    if [[ ! -z "$_per_directory_history_is_global" ]]; then
         local key_toggle_per_directory_history=Ctrl-G
-    }
+    fi
 
     # parameters and settings
     local pwd="$1"
@@ -27,7 +27,7 @@ function ls-panel {
 
     # get header
     local header
-    if [[ -z "$no_header" ]] {
+    if [[ -z "$no_header" ]]; then
         header+=$'\n'$(green "Open:")$'\t'$(white "$key_enter")$'\t'$(green "Delete:")$'\t'$(white "$key_delete")$'\t'$(green "Edit:")$'\t'$(white "$key_edit")
         header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")
         header+=$'\n'$(green "Go parent:")$'\t'$(white "$key_parent")
@@ -35,17 +35,17 @@ function ls-panel {
         header+=$'\n'$(green "Find Recursively:")$'\t'$(white "$key_find")
         header+=$'\n'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
         header+=$'\n'$(green "Run Query as Command:")$'\t'$(white "$key_run_query")
-        if [[ ! -z "$_per_directory_history_is_global" ]] {
+        if [[ ! -z "$_per_directory_history_is_global" ]]; then
             header+=$'\n'$(green "Toggle Per Directory History")$'\t'$(white "$key_toggle_per_directory_history")
-        }
+        fi
         header+=$'\n'$'\n'
-    } else {
+    else
         header=""
-    }
+    fi
     header+="$(yellow Directory:) $(red $pwd)"
     header+=$'\n'" "
 
-    function list-all () {
+    function list-all {
         list-file $*
         echo ""
         list-ancestors $*
@@ -57,7 +57,8 @@ function ls-panel {
 
     debug_var no_color
     # show fzf and get result
-    local res=$(
+    local res
+    res=$(
         list-all $pwd | \
             fzf --prompt="Filter: " \
                 $no_color \
@@ -72,100 +73,97 @@ function ls-panel {
                 --bind "Ctrl-C:clear-query" \
                 --expect "$key_enter,$key_delete,$key_exit,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell,$key_toggle_per_directory_history"
        )
+    local fzf_status=$?
 
-    debug_var res
+    # 1 means no match
+    if [[ $fzf_status == 1 ]]; then
+        res+=$'\n'
+    elif [[ $fzf_status != 0 ]]; then
+        exit 1
+    fi
 
-    # if fzf returned successfully, return
-    if [[ $? = 0 ]] {
-        local query=$(echo $res | head -n1)
-        local key=$(echo $res | head -n2 | tail -n1)
-        local item=$(echo $res | tail -n+3)
-        debug_var key
-        debug_var item
-        echo $query
-        case "$key" in
-            $key_enter)
-                case "$item" in
-                    "$command_icon"*)
-                        echo run
-                        echo $item[$(($#command_icon+1)),-1]
-                        ;;
-                    "$directory_icon"*)
-                        echo cd
-                        filename=$pwd/$(echo $item | awk '{print $NF}')
+    # if fzf returned successfully
+    local query key item
+    query=$(echo $res | head -n1)
+    key=$(echo $res | head -n2 | tail -n1)
+    item=$(echo $res | tail -n+3)
+    echo $query
+
+    local filename
+    case "$key" in
+        $key_enter)
+            case "$item" in
+                "$command_icon"*)
+                    echo run
+                    echo $item[$(($#command_icon+1)),-1]
+                    ;;
+                "$directory_icon"*)
+                    echo cd
+                    filename=$pwd/$(echo $item | awk '{print $NF}')
+                    echo $filename
+                    ;;
+                "$file_icon"*)
+                    echo open
+                    filename=$pwd/$(echo $item | awk '{print $NF}')
+                    echo $filename
+                    ;;
+                "$ancestor_icon"*|"$recent_dir_icon"*)
+                    echo cd
+                    filename=$(echo $item | awk '{print $NF}')
+                    echo $filename
+                    ;;
+            esac
+            ;;
+        $key_parent)
+            echo cd
+            echo $(dirname $pwd)
+            ;;
+        $key_delete)
+            echo rm
+            filename=$pwd/$(echo $item | awk '{print $NF}')
+            echo $filename
+            ;;
+        $key_edit)
+            echo edit
+            filename=$pwd/$(echo $item | awk '{print $NF}')
+            echo $filename
+            ;;
+        $key_find)
+            echo find
+            ;;
+        $key_run_query)
+            echo run
+            echo $query
+            ;;
+        $key_toggle_hidden)
+            echo toggle_hidden
+            ;;
+        $key_toggle_per_directory_history)
+            echo toggle_per_directory_history
+            ;;
+        $key_shell)
+            echo shell
+            debug "processing key-shell..."
+            case $item in
+                "$ancestor_icon"*|"$recent_dir_icon"*)
+                    debug "open shell in the pointed target"
+                    filename=$(echo $item | awk '{print $NF}')
+                    debug_var filename
+                    if [[ -f $filename ]]; then
+                        echo $(dirname $filename)
+                    else
                         echo $filename
-                        ;;
-                    "$file_icon"*)
-                        echo open
-                        local filename=$pwd/$(echo $item | awk '{print $NF}')
-                        echo $filename
-                        ;;
-                    "$ancestor_icon"*|"$recent_dir_icon"*)
-                        echo cd
-                        local filename=$(echo $item | awk '{print $NF}')
-                        echo $filename
-                        ;;
-                esac
-                ;;
-            $key_parent)
-                echo cd
-                echo $(dirname $pwd)
-                ;;
-            $key_delete)
-                echo rm
-                local filename=$pwd/$(echo $item | awk '{print $NF}')
-                echo $filename
-                ;;
-            $key_edit)
-                echo edit
-                local filename=$pwd/$(echo $item | awk '{print $NF}')
-                echo $filename
-                ;;
-            # $key_run)
-            #     echo run_file
-            #     filename=$pwd/$(echo $item | awk '{print $NF}')
-            #     echo $filename
-            #     ;;
-            $key_find)
-                echo find
-                ;;
-            $key_run_query)
-                echo run
-                echo $query
-                ;;
-            $key_toggle_hidden)
-                echo toggle_hidden
-                ;;
-            $key_toggle_per_directory_history)
-                echo toggle_per_directory_history
-                ;;
-            $key_shell)
-                echo shell
-                debug "processing key-shell..."
-                case $item in
-                    "$ancestor_icon"*|"$recent_dir_icon"*)
-                        debug "open shell in the pointed target"
-                        local filename=$(echo $item | awk '{print $NF}')
-                        debug_var filename
-                        if [[ -f $filename ]] {
-                            echo $(dirname $filename)
-                        } else {
-                            echo $filename
-                        }
-                        ;;
-                    "$command_icon"*|"$directory_icon"*|"$file_icon"*)
-                        debug "open shell in the current path"
-                        debug_var pwd
-                        echo $pwd
-                        ;;
-                esac
-                ;;
-            $key_exit)
-                echo exit
-                ;;
-        esac
-    } else {
-        # else return exception
-        echo exception
-    }
+                    fi
+                    ;;
+                "$command_icon"*|"$directory_icon"*|"$file_icon"*)
+                    debug "open shell in the current path"
+                    debug_var pwd
+                    echo $pwd
+                    ;;
+            esac
+            ;;
+        $key_exit)
+            echo exit
+            ;;
+    esac
 }

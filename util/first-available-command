@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+function first-available-command {
+    for candidate in $argv; do
+        cmd=$(echo $candidate | awk '{print $1}')
+        if {which $cmd > /dev/null}; then
+            echo $candidate
+            break
+        fi
+    done
+}

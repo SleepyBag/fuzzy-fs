@@ -7,32 +7,37 @@ function find-panel {
     local key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
     local key_toggle_hidden=${FUZZY_FS_KEY_TOGGLE_HIDDEN:-Ctrl-A}
     local key_exit=${FUZZY_FS_KEY_EXIT:-Ctrl-Q}
+    local key_abort=${FUZZY_FS_KEY_FIND:-Ctrl-F}
     local key_edit=${FUZZY_FS_KEY_EDIT:-Ctrl-O}
     local key_shell=${FUZZY_FS_KEY_SHELL:-Ctrl-I}
+    local key_parent=${FUZZY_FS_KEY_PARENT:-Ctrl-U}
 
     # parameters and settings
-    local current_dir="$1"
+    local pwd="$1"
     local init_query="$2"
     [[ -z "$no_color" ]] && local color_param=--ansi
 
     # get header
-    if [[ -z "$no_header" ]] {
+    if [[ -z "$no_header" ]]; then
         local header
         header+=$'\n'$(green "Open Directory:")$'\t'$(white "$key_enter")
         header+=$'\n'$(green "Toggle Hidden:")$'\t'$(white "$key_toggle_hidden")
         header+=$'\n'$(green "Exit:")$'\t'$(white "$key_exit")
         header+=$'\n'$(green "Edit:")$'\t'$(white "$key_edit")
+        header+=$'\n'$(green "Go parent:")$'\t'$(white "$key_parent")
+        header+=$'\n'$(green "Exit Find Mode:")$'\t'$(white "$key_abort")
         header+=$'\n'$(green "Start Shell Here:")$'\t'$(white "$key_shell")
         header+=$'\n'$'\n'
-    } else {
+    else
         header=""
-    }
-    header+="Directory: $current_dir"
+    fi
+    header+="Directory: $pwd"
     header+=$'\n'" "
 
     # show fzf and get result
-    local res=$(
-        ${=find_command} $current_dir | \
+    local res
+    res=$(
+        ${=find_command} $pwd | \
             fzf --prompt="Filter: " \
                 --no-multi \
                 --header="$header" \
@@ -40,53 +45,61 @@ function find-panel {
                 --query="$init_query" \
                 --height=100% \
                 $color_param \
-                --preview="$preview_command $current_dir/{-1}" \
+                --preview="$preview_command {-1}" \
                 --bind "Ctrl-C:clear-query" \
-                --expect "$key_enter,$key_toggle_hidden,$key_exit,$key_shell,$key_edit"
+                --expect "$key_enter,$key_toggle_hidden,$key_exit,$key_shell,$key_edit,$key_abort,$key_parent"
        )
+    local fzf_status=$?
 
-    debug_var res
+    # 1 means no match
+    if [[ $fzf_status == 1 ]]; then
+        res+=$'\n'
+    elif [[ $fzf_status != 0 ]]; then
+        exit 1
+    fi
 
     # if fzf returned successfully, return
-    if [[ $? = 0 ]] {
-        local query=$(echo $res | head -n1)
-        local key=$(echo $res | head -n2 | tail -n1)
-        local item=$(echo $res | tail -n+3)
-        debug_var key
-        debug_var item
-        echo $query
-        case "$key" in
-            $key_enter)
-                echo cd
-                if [[ -f $item ]] {
-                    echo $(dirname $item)
-                } else {
-                    echo $item
-                }
-                ;;
-            $key_toggle_hidden)
-                echo toggle_hidden
-                ;;
-            $key_exit)
-                echo ls
-                ;;
-            $key_edit)
-                echo edit
-                local filename=$item
+    local query key item
+    query=$(echo $res | head -n1)
+    key=$(echo $res | head -n2 | tail -n1)
+    item=$(echo $res | tail -n+3)
+    echo $query
+
+    case "$key" in
+        $key_enter)
+            echo cd
+            if [[ -f $item ]]; then
+                echo $(dirname $item)
+            else
+                echo $item
+            fi
+            ;;
+        $key_toggle_hidden)
+            echo toggle_hidden
+            ;;
+        $key_abort)
+            echo ls
+            ;;
+        $key_exit)
+            echo exit
+            ;;
+        $key_edit)
+            echo edit
+            local filename=$item
+            echo $filename
+            ;;
+        $key_parent)
+            echo cd
+            echo $(dirname $pwd)
+            ;;
+        $key_shell)
+            echo shell
+            local filename=$item
+            if [[ -f $filename ]]; then
+                echo $(dirname $filename)
+            else
                 echo $filename
-                ;;
-            $key_shell)
-                echo shell
-                local filename=$item
-                if [[ -f $filename ]] {
-                    echo $(dirname $filename)
-                } else {
-                    echo $filename
-                }
-                ;;
-        esac
-    } else {
-        # else return exception
-        echo exception
-    }
+            fi
+            ;;
+    esac
 }

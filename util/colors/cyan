@@ -1,1 +1,1 @@
-function cyan() { echo "\u001b[36m"$*"\u001b[0m" }
+function cyan { echo "\u001b[36m"$*"\u001b[0m" }

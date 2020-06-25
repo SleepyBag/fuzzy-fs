@@ -1,13 +1,13 @@
 #!/bin/zsh
 
-function abspath() {
-    if [[ -d "$*" ]] {
+function abspath {
+    if [[ -d "$*" ]]; then
         dir=$*
         echo $(cd $dir; pwd)
-    } else {
+    else
         dir=$(cd $(dirname "$*"); pwd)
         filename=$(basename "$*")
         [[ dir == "/" ]] && dir=""
         echo $dir/$filename
-    }
+    fi
 }

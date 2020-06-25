@@ -1,7 +1,7 @@
 #!/bin/zsh -i
 
 export HISTFILE=$HOME/.zsh_history
-local version=1.0
+local VERSION=1.0
 
 # for debug
 local field=main
@@ -11,11 +11,11 @@ export log_file=$base_dir/.log
 
 export fpath
 function use {
-    for dir ($argv) {
+    for dir ($argv); do
         dir=$base_dir/$dir
         fpath+=($dir)
         autoload -Uz $(ls -p $dir | grep -v /)
-    }
+    done
 }
 
 use function
@@ -31,19 +31,16 @@ use util/debug
 
 # params
 zparseopts -D \
-           -no-header=no_header \
-           H=no_header \
-           -no-color=no_color \
-           -all=show_hidden \
-           a=show_hidden \
-           -debug=debug_mode \
-           d=debug_mode \
-           -help=help \
-           h=help
+           H=no_header    -no-header=no_header \
+                          -no-color=no_color \
+           a=show_hidden  -all=show_hidden \
+           d=debug_mode   -debug=debug_mode \
+           h=help         -help=help \
+           V=version      -version=version
 init_path="$*"
 init_path=${init_path:-.}
 
-if [[ ! -z $help ]] {
+if [[ ! -z "$help" ]]; then
     cat <<EOF
 Usage: fuzzy-fs [options] [DIR]
 
@@ -54,32 +51,21 @@ Options:
     -H    --no-header    don't show key-binding tips in header
           --no-color     disable color
     -d    --debug-mode   output debug info into log file
-    -v    --version      show version
+    -V    --version      show version
     -h    --help         show this help
 EOF
     exit 0
-}
+fi
+if [[ ! -z "$version" ]]; then
+    echo $VERSION
+    exit 0
+fi
 
 # environment params
-export EDITOR=${EDITOR:-vim}
-export SHELL=${SHELL:-zsh}
-export TERMINAL
-if [[ -z $TERMINAL ]] {
-    $(which konsole &> /dev/null) && TERMINAL=konsole || \
-            $(which konsole &> /dev/null) && TERMINAL=gnome-terminal
-}
-export PAGER
-if [[ -z $PAGER ]] {
-    if {which bat &> /dev/null} {
-        PAGER="bat --paging=always"
-    } elif {which less &> /dev/null} {
-        PAGER=less
-    } elif {which more &> /dev/null} {
-        PAGER=more
-    }
-}
-# determine if you are using per-directory-history
-[[ -d $HOME/.directory_history && -z "$HISTORY_BASE" ]] && export HISTORY_BASE=$HOME/.directory_history
+export EDITOR=${EDITOR:-$(first-available-command vim emacs vi)}
+export SHELL=${SHELL:-$(first-available-command zsh bash ksh fish)}
+export TERMINAL=${TERMINAL:-$(first-available-command konsole gnome-terminal terminology xterm)}
+export PAGER=${PAGER:-$(first-available-command "bat --paging=always" less more)}
 
 # tunable commands
 export preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/preview}
@@ -99,29 +85,21 @@ export command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
 export recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
 # icons cannot be empty because they are neccessary to determine the item type
-function check_empty () {
-    var_name="$*"
-    if [[ ${(P)var_name} == "" ]] {
-        echo "$var_name cannot be empty!"
-        exit 1
-    }
-}
-check_empty file_icon
-check_empty ancestor_icon
-check_empty directory_icon
-check_empty command_icon
-check_empty recent_dir_icon
+check-empty  file_icon       link_icon     ancestor_icon  \
+             directory_icon  command_icon  recent_dir_icon
 
+# initialize
 init_path=$(abspath $init_path)
 pre_path=$PWD
 cd $init_path
 next_panel=ls-panel
 # if you are using per-directory-history, init directory
-if [[ ! -z "$_per_directory_history_is_global" ]] {
+if [[ ! -z "$_per_directory_history_is_global" ]]; then
     _per-directory-history-change-directory "$init_path" "$pre_path"
-}
+fi
+
 # main loop
-while [[ $res_command != exit ]] ; do
+while true; do
     # show panel
     res=$($next_panel $PWD $pre_query)
 
@@ -145,9 +123,9 @@ while [[ $res_command != exit ]] ; do
             # if you are using z or autojump
             add-recent-dir $PWD
             # if you are using per-directory-history
-            if [[ ! -z "$_per_directory_history_is_global" ]] {
+            if [[ ! -z "$_per_directory_history_is_global" ]]; then
                 _per-directory-history-change-directory "$PWD" "$old_path"
-            }
+            fi
             [[ "$next_panel" == "find-panel" ]] && next_panel=ls-panel
             ;;
         rm)
@@ -178,12 +156,13 @@ while [[ $res_command != exit ]] ; do
             toggle-per-directory-history
             ;;
         exit)
+            exit 0
             ;;
         *)
             echo something unexpected happend, please contact the author.
-            res_command=exit
+            exit 1
             ;;
     esac
 done
 
-exit
+exit 2

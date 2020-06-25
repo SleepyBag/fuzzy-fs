@@ -1,9 +1,9 @@
 #!/bin/zsh
 
-function toggle-per-directory-history() {
-  if [[ $_per_directory_history_is_global == true ]]; then
-    _per-directory-history-set-directory-history
-  else
-    _per-directory-history-set-global-history
-  fi
+function toggle-per-directory-history {
+    if [[ $_per_directory_history_is_global == true ]]; then
+        _per-directory-history-set-directory-history
+    else
+        _per-directory-history-set-global-history
+    fi
 }

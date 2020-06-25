@@ -1,1 +1,1 @@
-function yellow() { echo "\u001b[33m"$*"\u001b[0m" }
+function yellow { echo "\u001b[33m"$*"\u001b[0m" }

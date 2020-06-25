@@ -1,8 +1,8 @@
 #!/bin/zsh
 
-function debug_var() {
-    if [[ ! -z "$debug_mode" ]] {
+function debug_var {
+    if [[ ! -z "$debug_mode" ]]; then
         var="$*"
         echo $field :: $var : ${(P)var} >> $log_file
-    }
+    fi
 }
