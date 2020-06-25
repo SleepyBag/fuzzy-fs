@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function first-available-command {
+function _fuzzy-fs-first-available-command {
     for candidate in $argv; do
         cmd=$(echo $candidate | awk '{print $1}')
         if {which $cmd > /dev/null}; then

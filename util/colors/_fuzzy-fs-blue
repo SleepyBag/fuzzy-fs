@@ -1,0 +1,1 @@
+function _fuzzy-fs-blue { echo "\u001b[34m"$*"\u001b[0m" }

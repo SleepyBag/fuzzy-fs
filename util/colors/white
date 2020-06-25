@@ -1,1 +1,0 @@
-function white { echo "\u001b[37m"$*"\u001b[0m" }

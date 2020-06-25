@@ -1,16 +1,16 @@
 #!/bin/zsh
 
-function list-file {
+function _fuzzy-fs-list-file {
     # params
     [[ -z "$no_color" ]] && local color_param=--color=always || local color_param=""
     [[ -z "$show_hidden" ]] || local hidden_param=-A || local hidden_param=""
 
     # someone may define `k` themselves, so match the help document to avoid this situation
-    if {which k &> /dev/null} && [[ $(k --help |& head -n1) == "Usage: k [options] DIR" ]] && [[ -z "$no_color" ]] {
+    if {which k &> /dev/null} && [[ $(k --help |& head -n1) == "Usage: k [options] DIR" ]] && [[ -z "$no_color" ]]; then
         k $hidden_param $* | tail -n+2 | \
             sed "s/^d/$directory_icon  d/;s/^-/$file_icon  -/;s/^l/$link_icon  l/"
-    } else {
+    else
         ls -l $hidden_param $color_param $* | tail -n+2 | \
             sed "s/^d/$directory_icon  d/;s/^-/$file_icon  -/;s/^l/$link_icon  l/"
-    }
+    fi
 }

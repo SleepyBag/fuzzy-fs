@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function check_empty {
+function _fuzzy-fs-check_empty {
     for var_name in $argv; do
         if [[ ${(P)var_name} == "" ]]; then
             echo "$var_name cannot be empty!"

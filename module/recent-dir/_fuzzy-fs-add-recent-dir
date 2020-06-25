@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+function _fuzzy-fs-add-recent-dir {
+    dir="$*"
+    if {which _z &> /dev/null}; then
+        _z --add $dir
+    fi
+    if {which autojump &> /dev/null}; then
+        autojump --add $dir
+    fi
+}

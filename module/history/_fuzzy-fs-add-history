@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function add-history {
+function _fuzzy-fs-add-history {
     local field=add-history
     local cmd="$*"
     cmd="${cmd%%$'\n'}"

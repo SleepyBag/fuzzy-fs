@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function list-ancestors {
+function _fuzzy-fs-list-ancestors {
     local filename=$*
     local relative=..
     while [[ $filename != / ]]; do

@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function toggle-per-directory-history {
+function _fuzzy-fs-toggle-per-directory-history {
     if [[ $_per_directory_history_is_global == true ]]; then
         _per-directory-history-set-directory-history
     else

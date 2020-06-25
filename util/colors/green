@@ -1,1 +1,0 @@
-function green { echo "\u001b[32m"$*"\u001b[0m" }

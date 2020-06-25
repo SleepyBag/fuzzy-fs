@@ -1,47 +1,34 @@
-#!/bin/zsh -i
+#!/bin/zsh
+FUZZY_FS_BASE_DIR=$(readlink -f $0 | xargs dirname)
 
-export HISTFILE=$HOME/.zsh_history
-local VERSION=1.0
+function fuzzy-fs {
+    # for debug
+    local field=main
 
-# for debug
-local field=main
+    local base_dir=$FUZZY_FS_BASE_DIR
+    local VERSION=1.0
+    local log_file=$base_dir/.log
 
-export base_dir=$(readlink -f $0 | xargs dirname)
-export log_file=$base_dir/.log
-
-export fpath
-function use {
-    for dir ($argv); do
-        dir=$base_dir/$dir
+    # load all functions
+    local fpath
+    for dir in $(find $base_dir -type d -not -path '*/\.*'); do
         fpath+=($dir)
         autoload -Uz $(ls -p $dir | grep -v /)
     done
-}
 
-use function
-use module
-use module/ancestors
-use module/find
-use module/history
-use module/ls
-use module/recent-dir
-use util
-use util/colors
-use util/debug
+    # params
+    zparseopts -D \
+            H=no_header    -no-header=no_header \
+                            -no-color=no_color \
+            a=show_hidden  -all=show_hidden \
+            d=debug_mode   -debug=debug_mode \
+            h=help         -help=help \
+            V=version      -version=version
+    local init_path="$*"
+    init_path=${init_path:-.}
 
-# params
-zparseopts -D \
-           H=no_header    -no-header=no_header \
-                          -no-color=no_color \
-           a=show_hidden  -all=show_hidden \
-           d=debug_mode   -debug=debug_mode \
-           h=help         -help=help \
-           V=version      -version=version
-init_path="$*"
-init_path=${init_path:-.}
-
-if [[ ! -z "$help" ]]; then
-    cat <<EOF
+    if [[ ! -z "$help" ]]; then
+        cat <<EOF
 Usage: fuzzy-fs [options] [DIR]
 
 Open a file navigator powered by fzf at DIR.
@@ -49,120 +36,111 @@ Open a file navigator powered by fzf at DIR.
 Options:
     -a    --all          list hidden files
     -H    --no-header    don't show key-binding tips in header
-          --no-color     disable color
+        --no-color     disable color
     -d    --debug-mode   output debug info into log file
     -V    --version      show version
     -h    --help         show this help
 EOF
-    exit 0
-fi
-if [[ ! -z "$version" ]]; then
-    echo $VERSION
-    exit 0
-fi
+        return 0
+    fi
+    if [[ ! -z "$version" ]]; then
+        echo $VERSION
+        return 0
+    fi
 
-# environment params
-export EDITOR=${EDITOR:-$(first-available-command vim emacs vi)}
-export SHELL=${SHELL:-$(first-available-command zsh bash ksh fish)}
-export TERMINAL=${TERMINAL:-$(first-available-command konsole gnome-terminal terminology xterm)}
-export PAGER=${PAGER:-$(first-available-command "bat --paging=always" less more)}
+    # environment params
+    local EDITOR=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
+    local SHELL=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
+    local TERMINAL=${TERMINAL:-$(_fuzzy-fs-first-available-command konsole gnome-terminal terminology xterm)}
+    local PAGER=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
 
-# tunable commands
-export preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/preview}
-export ls_command=${FUZZY_FS_LS_COMMAND:-list-file}
-export ls_recent_command=${FUZZY_FS_LS_RECENT_COMMAND:-list-recent-dir}
-export find_command=${FUZZY_FS_FIND_COMMAND:-find-recursively}
-export history_command=${FUZZY_FS_HISTORY_COMMAND:-list-history}
-export ancestors_command=${FUZZY_FS_ANCESTORS_COMMAND:-list-ancestors}
-export open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
+    # tunable commands
+    local preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/_fuzzy-fs-preview}
+    local ls_command=${FUZZY_FS_LS_COMMAND:-_fuzzy-fs-list-file}
+    local ls_recent_command=${FUZZY_FS_LS_RECENT_COMMAND:-_fuzzy-fs-list-recent-dir}
+    local find_command=${FUZZY_FS_FIND_COMMAND:-_fuzzy-fs-find-recursively}
+    local history_command=${FUZZY_FS_HISTORY_COMMAND:-_fuzzy-fs-list-history}
+    local list_ancestors_command=${FUZZY_FS_ANCESTORS_COMMAND:-_fuzzy-fs-list-ancestors}
+    local open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
 
-# tunable icons
-export file_icon=${FUZZY_FS_FILE_ICON:- fl}
-export link_icon=${FUZZY_FS_LINK_ICON:- lk}
-export ancestor_icon=${FUZZY_FS_ANCESTOR_ICON:- up}
-export directory_icon=${FUZZY_FS_DIRECTORY_ICON:- dr}
-export command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
-export recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
+    # tunable icons
+    local file_icon=${FUZZY_FS_FILE_ICON:- fl}
+    local link_icon=${FUZZY_FS_LINK_ICON:- lk}
+    local ancestor_icon=${FUZZY_FS_ANCESTOR_ICON:- up}
+    local directory_icon=${FUZZY_FS_DIRECTORY_ICON:- dr}
+    local command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
+    local recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
-# icons cannot be empty because they are neccessary to determine the item type
-check-empty  file_icon       link_icon     ancestor_icon  \
-             directory_icon  command_icon  recent_dir_icon
+    # icons cannot be empty because they are neccessary to determine the item type
+    _fuzzy-fs-check-empty  file_icon       link_icon     ancestor_icon  \
+                           directory_icon  command_icon  recent_dir_icon
 
-# initialize
-init_path=$(abspath $init_path)
-pre_path=$PWD
-cd $init_path
-next_panel=ls-panel
-# if you are using per-directory-history, init directory
-if [[ ! -z "$_per_directory_history_is_global" ]]; then
-    _per-directory-history-change-directory "$init_path" "$pre_path"
-fi
+    # initialize
+    init_path=$(_fuzzy-fs-abspath $init_path)
+    local pre_path=$PWD
+    cd $init_path
+    local next_panel=_fuzzy-fs-ls-panel
+    # if you are using per-directory-history, init directory
+    if [[ ! -z "$_per_directory_history_is_global" ]]; then
+        _per-directory-history-change-directory "$init_path" "$pre_path"
+    fi
 
-# main loop
-while true; do
-    # show panel
-    res=$($next_panel $PWD $pre_query)
+    # main loop
+    while true; do
+        # show panel
+        local query=""
+        local cmd=""
+        local target=""
+        ${=next_panel} $PWD $pre_query
 
-    # parse result
-    query=$(echo $res | head -n1)
-    res_command=$(echo $res | head -n2 | tail -n1)
-    target=$(echo $res | tail -n+3)
+        local pre_query=""
+        case "$cmd" in
+            open)
+                zsh -c "${=open_command} $target" &> /dev/null
+                ;;
+            cd)
+                local old_path=$PWD
+                cd $target
+                # if you are using z or autojump
+                _fuzzy-fs-add-recent-dir $PWD
+                # if you are using per-directory-history
+                if [[ ! -z "$_per_directory_history_is_global" ]]; then
+                    _per-directory-history-change-directory "$PWD" "$old_path"
+                fi
+                ;;
+            rm)
+                rm -ir $target
+                ;;
+            edit)
+                _fuzzy-fs-edit "$PWD" "$target"
+                ;;
+            run)
+                _fuzzy-fs-add-history "$target"
+                eval $target
+                ;;
+            shell)
+                _fuzzy-fs-open-shell "$target"
+                pre_query=$query
+                ;;
+            toggle_hidden)
+                [[ -z "$show_hidden" ]] && show_hidden=(-a) || show_hidden=()
+                pre_query=$query
+                ;;
+            toggle_per_directory_history)
+                _fuzzy-fs-toggle-per-directory-history
+                pre_query=$query
+                ;;
+            refresh)
+                ;;
+            exit)
+                return 0
+                ;;
+            *)
+                echo something unexpected happend, please contact the author.
+                return 1
+                ;;
+        esac
+    done
 
-    pre_query=""
-    debug_var res
-    debug_var query
-    debug_var res_command
-    debug_var target
-    case "$res_command" in
-        open)
-            zsh -c "${=open_command} $target" &> /dev/null
-            ;;
-        cd)
-            old_path=$PWD
-            cd $target
-            # if you are using z or autojump
-            add-recent-dir $PWD
-            # if you are using per-directory-history
-            if [[ ! -z "$_per_directory_history_is_global" ]]; then
-                _per-directory-history-change-directory "$PWD" "$old_path"
-            fi
-            [[ "$next_panel" == "find-panel" ]] && next_panel=ls-panel
-            ;;
-        rm)
-            rm -ir $target
-            ;;
-        edit)
-            edit "$PWD" "$target"
-            ;;
-        run)
-            add-history "$target"
-            eval $target
-            ;;
-        find)
-            next_panel=find-panel
-            ;;
-        ls)
-            next_panel=ls-panel
-            ;;
-        shell)
-            open-shell "$target"
-            pre_query=$query
-            ;;
-        toggle_hidden)
-            [[ -z "$show_hidden" ]] && show_hidden=(-a) || show_hidden=()
-            pre_query=$query
-            ;;
-        toggle_per_directory_history)
-            toggle-per-directory-history
-            ;;
-        exit)
-            exit 0
-            ;;
-        *)
-            echo something unexpected happend, please contact the author.
-            exit 1
-            ;;
-    esac
-done
-
-exit 2
+    return 2
+}

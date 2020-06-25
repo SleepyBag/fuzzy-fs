@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function open-shell {
+function _fuzzy-fs-open-shell {
     local pwd=$*
     if [[ ! -z $TMUX ]]; then
         tmux new-window -c "$pwd" -n "dir $(basename $pwd)"

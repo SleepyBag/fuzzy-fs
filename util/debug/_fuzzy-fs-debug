@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-function debug {
+function _fuzzy-fs-debug {
     echo $field :: $* >> $log_file
 }

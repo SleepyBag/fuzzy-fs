@@ -1,1 +1,0 @@
-function magenta { echo "\u001b[35m"$*"\u001b[0m" }

@@ -1,1 +1,0 @@
-function black { echo "\u001b[30m"$*"\u001b[0m" }

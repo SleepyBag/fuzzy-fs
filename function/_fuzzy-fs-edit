@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function edit {
+function _fuzzy-fs-edit {
     local field=edit
     local pwd=$1
     local target=$2

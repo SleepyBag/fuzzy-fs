@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function abspath {
+function _fuzzy-fs-abspath {
     if [[ -d "$*" ]]; then
         dir=$*
         echo $(cd $dir; pwd)

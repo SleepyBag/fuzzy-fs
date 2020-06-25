@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function find-recursively {
+function _fuzzy-fs-find-recursively {
     local field=find-recursively
     # params
     [[ -z "$no_color" ]] && color_param=--color=always
