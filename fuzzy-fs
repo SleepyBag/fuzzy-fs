@@ -11,9 +11,9 @@ function fuzzy-fs {
 
     # load all functions
     local fpath
-    for dir in $(find $base_dir -type d -not -path '*/\.*'); do
-        fpath+=($dir)
-        autoload -Uz $(ls -p $dir | grep -v /)
+    for dir in $(cd $base_dir; find . -type d -not -path '*/\.*'); do
+        fpath+=($base_dir/$dir)
+        autoload -Uz $(ls -p $base_dir/$dir | grep -v /)
     done
 
     # params
