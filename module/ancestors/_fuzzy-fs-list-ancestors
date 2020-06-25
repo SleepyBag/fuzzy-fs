@@ -5,7 +5,7 @@ function _fuzzy-fs-list-ancestors {
     local relative=..
     while [[ $filename != / ]]; do
         filename=$(dirname $filename)
-        echo $ancestor_icon"  "$relative$'\t'$filename
+        echo $ancestor_icon" "$relative$'\t'$filename
         relative=$relative.
     done
 }

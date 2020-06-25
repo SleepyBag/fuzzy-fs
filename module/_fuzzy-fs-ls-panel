@@ -101,11 +101,24 @@ function _fuzzy-fs-ls-panel {
                     ;;
                 "$directory_icon"*)
                     cmd=cd
-                    target=$pwd/$(echo $item | awk '{print $NF}')
+                    item=$item[$(($#directory_icon+2)),-1]
+                    echo $item
+                    if [[ ! -z "K" ]]; then
+                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
+                      target=$pwd/$target
+                    else
+                      target=$pwd/$(echo $item | awk '{print $NF}')
+                    fi
                     ;;
                 "$file_icon"*)
                     cmd=open
-                    target=$pwd/$(echo $item | awk '{print $NF}')
+                    item=$item[$(($#file_icon+1)),-1]
+                    if [[ ! -z "K" ]]; then
+                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
+                      target=$pwd/$target
+                    else
+                      target=$pwd/$(echo $item | awk '{print $NF}')
+                    fi
                     ;;
                 "$ancestor_icon"*|"$recent_dir_icon"*)
                     cmd=cd

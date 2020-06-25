@@ -71,6 +71,11 @@ EOF
     local command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
     local recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
+    # check if k available
+    if {which k &> /dev/null} && [[ $(k --help |& head -n1) == "Usage: k [options] DIR" ]]; then
+      K=true
+    fi
+
     # icons cannot be empty because they are neccessary to determine the item type
     _fuzzy-fs-check-empty  file_icon       link_icon     ancestor_icon  \
                            directory_icon  command_icon  recent_dir_icon
