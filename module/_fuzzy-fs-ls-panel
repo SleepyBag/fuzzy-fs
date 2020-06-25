@@ -92,6 +92,7 @@ function _fuzzy-fs-ls-panel {
     key=$(echo $res | head -n2 | tail -n1)
     item=$(echo $res | tail -n+3)
 
+    [[ "$pwd" == "/" ]] && pwd=""
     case "$key" in
         $key_enter)
             case "$item" in
@@ -102,7 +103,6 @@ function _fuzzy-fs-ls-panel {
                 "$directory_icon"*)
                     cmd=cd
                     item=$item[$(($#directory_icon+2)),-1]
-                    echo $item
                     if [[ ! -z "K" ]]; then
                       target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
                       target=$pwd/$target
@@ -112,13 +112,23 @@ function _fuzzy-fs-ls-panel {
                     ;;
                 "$file_icon"*)
                     cmd=open
-                    item=$item[$(($#file_icon+1)),-1]
+                    item=$item[$(($#file_icon+2)),-1]
                     if [[ ! -z "K" ]]; then
                       target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
                       target=$pwd/$target
                     else
                       target=$pwd/$(echo $item | awk '{print $NF}')
                     fi
+                    ;;
+                "$link_icon"*)
+                    item=$item[$(($#link_icon+2)),-1]
+                    if [[ ! -z "K" ]]; then
+                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
+                      target=$pwd/$target
+                    else
+                      target=$pwd/$(echo $item | awk '{print $NF}')
+                    fi
+                    [[ -d $target ]] && cmd=cd || cmd=open
                     ;;
                 "$ancestor_icon"*|"$recent_dir_icon"*)
                     cmd=cd
@@ -128,7 +138,7 @@ function _fuzzy-fs-ls-panel {
             ;;
         $key_parent)
             cmd=cd
-            target=$(dirname $pwd)
+            [[ $pwd == "" ]] && target=/ || target=$(dirname $pwd)
             ;;
         $key_delete)
             cmd=rm
