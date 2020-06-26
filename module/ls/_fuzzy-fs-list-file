@@ -6,7 +6,7 @@ function _fuzzy-fs-list-file {
     [[ -z "$show_hidden" ]] || local hidden_param=-A || local hidden_param=""
 
     # someone may define `k` themselves, so match the help document to avoid this situation
-    if [[ ! -z "K" ]]; then
+    if [[ ! -z "$k_available" ]]; then
         k $hidden_param $* | tail -n+2 | \
             sed "s/^d/$directory_icon d/;s/^-/$file_icon -/;s/^l/$link_icon l/"
     else

@@ -103,7 +103,7 @@ function _fuzzy-fs-ls-panel {
                 "$directory_icon"*)
                     cmd=cd
                     item=$item[$(($#directory_icon+2)),-1]
-                    if [[ ! -z "K" ]]; then
+                    if [[ ! -z "$k_available" ]]; then
                       target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
                       target=$pwd/$target
                     else
@@ -113,7 +113,7 @@ function _fuzzy-fs-ls-panel {
                 "$file_icon"*)
                     cmd=open
                     item=$item[$(($#file_icon+2)),-1]
-                    if [[ ! -z "K" ]]; then
+                    if [[ ! -z "$k_available" ]]; then
                       target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
                       target=$pwd/$target
                     else
@@ -122,7 +122,7 @@ function _fuzzy-fs-ls-panel {
                     ;;
                 "$link_icon"*)
                     item=$item[$(($#link_icon+2)),-1]
-                    if [[ ! -z "K" ]]; then
+                    if [[ ! -z "$k_available" ]]; then
                       target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
                       target=$pwd/$target
                     else

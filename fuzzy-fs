@@ -72,8 +72,10 @@ EOF
     local recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
     # check if k available
-    if {which k &> /dev/null} && [[ $(k --help |& head -n1) == "Usage: k [options] DIR" ]]; then
-      K=true
+    if {which k &> /dev/null} && \
+      [[ $(k --help |& head -n1) == "Usage: k [options] DIR" ]] && \
+      [[ -z "$no_color" ]]; then
+      local k_available=true
     fi
 
     # icons cannot be empty because they are neccessary to determine the item type
