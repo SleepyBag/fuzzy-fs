@@ -31,13 +31,13 @@ Just run `fuzzy-fs` in your shell, then you are easy to go.
 
 ## Find Recursively
 
-Usually, I know which file I'm looking for, but don't know it's path. So let's hit `Ctrl-F` to find it recursively:
+Usually, you know which file you are looking for, but you can't recall it's path. So let's hit `Ctrl-F` to find it recursively:
 
 ![fuzzy-fs: find](demonstration/find.gif "fuzzy-fs: find")
 
 ## Run Command directly
 
-Touch a file, and remove it, see git status, as easily as what you do in shell. Just hit `Ctrl-Y`, you can run directly what you insert as a command. All your alias, functions and even command history are available. What's more, if you are using[per-directory-history](https://github.com/jimhester/per-directory-history "per-directory-history"), it is also supported.
+Touch a file, and remove it, see git status, as easily as what you do in shell. Just hit `Ctrl-Y`, you can run directly what you insert as a command. All your alias, functions and even command history are available. What's more, if you are using [per-directory-history](https://github.com/jimhester/per-directory-history "per-directory-history"), it is also supported.
 
 ![fuzzy-fs: command](demonstration/command.gif "fuzzy-fs: command")
 
