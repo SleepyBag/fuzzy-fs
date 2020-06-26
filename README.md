@@ -8,6 +8,11 @@
 zplug "SleepyBag/fuzzy-fs", use:fuzzy-fs
 ```
 
+- Or manually:
+
+1. Clone this repo into an arbitrary path;
+2. source file fuzzy-fs in your .zshrc.
+
 ## Dependencies
 
 - zsh
