@@ -10,7 +10,7 @@ function _fuzzy-fs-list-file {
         k $hidden_param $* | tail -n+2 | \
             sed "s/^d/$directory_icon d/;s/^-/$file_icon -/;s/^l/$link_icon l/"
     else
-        ls -l $hidden_param $color_param $* | tail -n+2 | \
+        ls -lL $hidden_param $color_param $* | tail -n+2 | \
             sed "s/^d/$directory_icon d/;s/^-/$file_icon -/;s/^l/$link_icon l/"
     fi
 }
