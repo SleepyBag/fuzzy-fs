@@ -44,7 +44,7 @@ Usually, you know which file you are looking for, but you can't recall it's path
 
 Touch a file, and remove it, see git status, as easily as what you do in shell. Just hit `Ctrl-Y`, you can run directly what you insert as a command. All your alias, functions and even command history are available. What's more, if you are using [per-directory-history](https://github.com/jimhester/per-directory-history "per-directory-history"), it is also supported.
 
-![fuzzy-fs: command](demonstration/https://raw.githubusercontent.com/SleepyBag/fuzzy-fs/readme/demonstration/command.gif "fuzzy-fs: command")
+![fuzzy-fs: command](https://raw.githubusercontent.com/SleepyBag/fuzzy-fs/readme/demonstration/command.gif "fuzzy-fs: command")
 
 ## Autojump / z support
 
