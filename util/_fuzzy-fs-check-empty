@@ -4,7 +4,7 @@ function _fuzzy-fs-check_empty {
     for var_name in $argv; do
         if [[ ${(P)var_name} == "" ]]; then
             echo "$var_name cannot be empty!"
-            exit 1
+            return 1
         fi
     done
 }
