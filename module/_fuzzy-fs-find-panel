@@ -48,7 +48,7 @@ function _fuzzy-fs-find-panel {
                 --height=100% \
                 $color_param \
                 --preview="$preview_command {-1}" \
-                --bind "Ctrl-C:clear-query" \
+                --bind "Ctrl-C:cancel" \
                 --expect "$key_enter,$key_toggle_hidden,$key_exit,$key_refresh,$key_shell,$key_edit,$key_abort,$key_parent"
        )
     local fzf_status=$?
