@@ -158,7 +158,12 @@ EOF
                 return 0
                 ;;
             *)
-                echo something unexpected happend, please contact the author.
+                echo fzf returned something unexpected, please contact the author with the following information:
+                echo PWD: $PWD
+                echo the last panel is: $next_panel
+                echo the query string is: $query
+                echo the cmd is: $cmd
+                echo the taget is: $target
                 return 1
                 ;;
         esac
