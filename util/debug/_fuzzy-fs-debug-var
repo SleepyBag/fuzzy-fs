@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-function _fuzzy-fs-debug_var {
+function _fuzzy-fs-debug-var {
     if [[ ! -z "$debug_mode" ]]; then
         var="$*"
         echo $field :: $var : ${(P)var} >> $log_file

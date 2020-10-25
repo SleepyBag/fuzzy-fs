@@ -48,6 +48,16 @@ EOF
         return 0
     fi
 
+    if [[ ! -z "$debug_mode" ]]; then
+        echo Debug information logged to $log_file 1>&2
+    fi
+
+    # check if fzf installed
+    if ! type fzf > /dev/null; then
+        echo fzf is not installed!
+        return 1
+    fi
+
     # environment params
     local EDITOR=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
     local SHELL=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
@@ -99,6 +109,11 @@ EOF
         local cmd=""
         local target=""
         ${=next_panel} $PWD $pre_query
+
+        _fuzzy-fs-debug-var PWD
+        _fuzzy-fs-debug-var query
+        _fuzzy-fs-debug-var cmd
+        _fuzzy-fs-debug-var target
 
         local pre_query=""
         case "$cmd" in
