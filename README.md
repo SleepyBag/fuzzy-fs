@@ -75,7 +75,7 @@ You may find that some icons aren't shown well in your terminal because of font.
 | FUZZY_FS_COMMAND_ICON    | icon of history command      |  cm          |
 | FUZZY_FS_RECENT_DIR_ICON | icon of hisotry directories  |  rf          |
 
-**They can be set as any string but not empty** because `fuzzy-fs` uses icon to determine the action it takes.
+If you see white blocks in the table. Don't be confused. They are initially icons. **These variables can be set as any string but not empty** because `fuzzy-fs` uses icon to determine the action it takes.
 
 # Contributing
 
