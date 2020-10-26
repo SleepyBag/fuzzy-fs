@@ -32,7 +32,7 @@ function _fuzzy-fs-list-file {
     _fuzzy-fs-debug-var color_param
     _fuzzy-fs-debug-var start_line
 
-    local res=$($ls_command ${=params} $color_param | tail -n+"$start_line")
+    local res=$($ls_command ${=params} $color_param $hidden_param | tail -n+"$start_line")
     res=("${(f)res}")
     for line in $res; do
         uncolored_line=$(echo $line | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g')
