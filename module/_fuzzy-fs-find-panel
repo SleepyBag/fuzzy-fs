@@ -39,7 +39,7 @@ function _fuzzy-fs-find-panel {
     # show fzf and get result
     local res
     res=$(
-        ${=find_command} $pwd | \
+        _fuzzy-fs-find-recursively $pwd | \
             fzf --prompt="Filter: " \
                 --no-multi \
                 --header="$header" \

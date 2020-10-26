@@ -1,16 +1,46 @@
 #!/bin/zsh
 
 function _fuzzy-fs-list-file {
-    # params
-    [[ -z "$no_color" ]] && local color_param=--color=always || local color_param=""
-    [[ -z "$show_hidden" ]] || local hidden_param=-A || local hidden_param=""
+    # for debug
+    local field=list-file
+    _fuzzy-fs-debug-var ls_command
 
-    # someone may define `k` themselves, so match the help document to avoid this situation
-    if [[ ! -z "$k_available" ]]; then
-        k $hidden_param $* | tail -n+2 | \
-            sed "s/^d/$directory_icon d/;s/^-/$file_icon -/;s/^l/$link_icon l/"
+    local params=""
+    local start_line=""
+    local color_param=""
+    local shown_hidden=""
+    case $ls_command in
+        exa)
+            params="-l --git"
+            start_line=1
+            [[ ! -z "$show_hidden" ]] && local hidden_param=-a
+            ;;
+        ls)
+            params="-l"
+            start_line=2
+            [[ ! -z "$show_hidden" ]] && local hidden_param=-A
+            ;;
+    esac
+
+    if [[ -z "$no_color" ]]; then
+        color_param=--color=always
     else
-        ls -lL $hidden_param $color_param $* | tail -n+2 | \
-            sed "s/^d/$directory_icon d/;s/^-/$file_icon -/;s/^l/$link_icon l/"
+        color_param=--color=never
     fi
+
+    _fuzzy-fs-debug-var params
+    _fuzzy-fs-debug-var color_param
+    _fuzzy-fs-debug-var start_line
+
+    local res=$($ls_command ${=params} $color_param | tail -n+"$start_line")
+    res=("${(f)res}")
+    for line in $res; do
+        uncolored_line=$(echo $line | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g')
+        case $uncolored_line[1] in
+            d) echo $directory_icon $line ;;
+            l) echo $link_icon $line ;;
+            *) echo $file_icon $line ;;
+        esac
+    done
+
 }

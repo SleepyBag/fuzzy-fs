@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+function _fuzzy-fs-parse-file-item {
+    # for debug
+    local field=parse-file-item
+
+    # strip off color
+    local item=$(echo $* | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g')
+    local target
+    # parse
+    case $ls_command in
+        exa)
+            if git status &> /dev/null; then
+                target=$(echo $item | awk '{print $8}')
+            else
+                target=$(echo $item | awk '{print $7}')
+            fi
+            ;;
+        ls)
+            target=$(echo $item | awk '{print $9}')
+            ;;
+    esac
+
+    _fuzzy-fs-debug-var item
+    _fuzzy-fs-debug-var target
+    echo $target
+}

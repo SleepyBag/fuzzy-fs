@@ -51,13 +51,13 @@ function _fuzzy-fs-ls-panel {
     header+=$'\n'" "
 
     function _fuzzy-fs-list-all {
-        ${=ls_command} $*
+        _fuzzy-fs-list-file $*
         echo ""
-        ${=list_ancestors_command} $*
+        _fuzzy-fs-list-ancestors $*
         echo ""
-        ${=history_command} $*
+        _fuzzy-fs-list-history $*
         echo ""
-        ${=ls_recent_command}
+        _fuzzy-fs-list-recent-dir
     }
 
     # show fzf and get result
@@ -107,31 +107,16 @@ function _fuzzy-fs-ls-panel {
                 "$directory_icon"*)
                     cmd=cd
                     item=$item[$(($#directory_icon+2)),-1]
-                    if [[ ! -z "$k_available" ]]; then
-                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
-                      target=$pwd/$target
-                    else
-                      target=$pwd/$(echo $item | awk '{print $NF}')
-                    fi
+                    target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     ;;
                 "$file_icon"*)
                     cmd=open
                     item=$item[$(($#file_icon+2)),-1]
-                    if [[ ! -z "$k_available" ]]; then
-                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
-                      target=$pwd/$target
-                    else
-                      target=$pwd/$(echo $item | awk '{print $NF}')
-                    fi
+                    target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     ;;
                 "$link_icon"*)
                     item=$item[$(($#link_icon+2)),-1]
-                    if [[ ! -z "$k_available" ]]; then
-                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
-                      target=$pwd/$target
-                    else
-                      target=$pwd/$(echo $item | awk '{print $NF}')
-                    fi
+                    target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     [[ -d $target ]] && cmd=cd || cmd=open
                     ;;
                 "$ancestor_icon"*|"$recent_dir_icon"*)

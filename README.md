@@ -22,7 +22,7 @@ zplug "SleepyBag/fuzzy-fs", use:fuzzy-fs
 
 - [z](https://github.com/rupa/z "z") (to list recent files, you don't need autojump if you have z)
 - [autojump](https://github.com/wting/autojump "autojump") (to list recent files, you don't need z if you have autojump)
-- [k](https://github.com/supercrabtree/k "k") (to show git information in file list)
+- [exa](https://github.com/ogham/exa "exa") (to show colorful file list with git information)
 - [bat](https://github.com/sharkdp/bat "bat") (for colored preview)
 - [fd](https://github.com/sharkdp/fd "fd") (for faster and colored find)
 

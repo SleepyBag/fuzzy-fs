@@ -65,13 +65,8 @@ EOF
     local PAGER=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
 
     # tunable commands
-    local preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/_fuzzy-fs-preview}
-    local ls_command=${FUZZY_FS_LS_COMMAND:-_fuzzy-fs-list-file}
-    local ls_recent_command=${FUZZY_FS_LS_RECENT_COMMAND:-_fuzzy-fs-list-recent-dir}
-    local find_command=${FUZZY_FS_FIND_COMMAND:-_fuzzy-fs-find-recursively}
-    local history_command=${FUZZY_FS_HISTORY_COMMAND:-_fuzzy-fs-list-history}
-    local list_ancestors_command=${FUZZY_FS_ANCESTORS_COMMAND:-_fuzzy-fs-list-ancestors}
     local open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
+    local preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/_fuzzy-fs-preview}
 
     # tunable icons
     local file_icon=${FUZZY_FS_FILE_ICON:- fl}
@@ -81,11 +76,13 @@ EOF
     local command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
     local recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
-    # check if k available
-    if {which k &> /dev/null} && \
-      [[ $(k --help |& head -n1) == "Usage: k [options] DIR" ]] && \
-      [[ -z "$no_color" ]]; then
-      local k_available=true
+    # determine the command listing files
+    local ls_command
+    # check if exa available
+    if type exa &> /dev/null; then
+        ls_command=exa
+    else
+        ls_commans=ls
     fi
 
     # icons cannot be empty because they are neccessary to determine the item type
