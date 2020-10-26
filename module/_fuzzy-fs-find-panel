@@ -52,22 +52,23 @@ function _fuzzy-fs-find-panel {
                 --expect "$key_enter,$key_toggle_hidden,$key_exit,$key_refresh,$key_shell,$key_edit,$key_abort,$key_parent"
        )
     local fzf_status=$?
+    res=("${(f)res}")
 
     # handle fzf return value
     case "$fzf_status" in
         # no match
-        1) res+=$'\n' ;;
+        1) res=() ;;
         # error
         2) return 1 ;;
         # interrupted
-        130) res=$'\n'"$key_exit"$'\n'
+        130) res=("" "$key_exit" "")
     esac
 
-    # if fzf returned successfully, return
+    # if fzf returned successfully
     local key item
-    query=$(echo $res | head -n1)
-    key=$(echo $res | head -n2 | tail -n1)
-    item=$(echo $res | tail -n+3)
+    query=$res[1]
+    key=$res[2]
+    item=$res[3]
 
     next_panel=_fuzzy-fs-ls-panel
     case "$key" in
