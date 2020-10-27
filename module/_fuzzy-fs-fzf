@@ -7,22 +7,45 @@ function _fuzzy-fs-fzf {
     local cmd=$argv[1]
     local expect=$argv[2]
 
+    local fzf_items
     local res
-    res=$(
-        ${=cmd} $pwd | \
-            fzf --prompt="Filter: " \
-                $no_color \
-                --no-sort \
-                --no-multi \
-                --header="$header" \
-                --print-query \
-                --query="$init_query" \
-                --height=100% \
-                $color_param \
-                --preview="$preview_command {-1}" \
-                --bind "Ctrl-C:cancel" \
-                --expect "$expect"
-       )
+    # TODO: combine two fzf command
+    case $cmd in
+        _fuzzy-fs-list-all)
+            ${=cmd}
+            res=$(for item in $fzf_items; do
+                      if [[ -z "$item" ]]; then
+                          notify-send good
+                      fi
+                      echo "$item"
+                  done | fzf --prompt="Filter: " \
+                             $no_color \
+                             --no-sort \
+                             --no-multi \
+                             --header="$header" \
+                             --print-query \
+                             --query="$init_query" \
+                             --height=100% \
+                             $color_param \
+                             --preview="$preview_command {-1}" \
+                             --bind "Ctrl-C:cancel" \
+                             --expect "$expect")
+            ;;
+        _fuzzy-fs-find-recursively)
+            res=$(${=cmd} | fzf --prompt="Filter: " \
+                                $no_color \
+                                --no-sort \
+                                --no-multi \
+                                --header="$header" \
+                                --print-query \
+                                --query="$init_query" \
+                                --height=100% \
+                                $color_param \
+                                --preview="$preview_command {-1}" \
+                                --bind "Ctrl-C:cancel" \
+                                --expect "$expect")
+            ;;
+    esac
     local fzf_status=$?
     res=("${(f@)res}")
 

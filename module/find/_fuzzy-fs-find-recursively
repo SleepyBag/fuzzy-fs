@@ -5,19 +5,17 @@ function _fuzzy-fs-find-recursively {
     # params
     [[ -z "$no_color" ]] && color_param=--color=always
 
-    local pwd="$*"
-
-    if {which fd &> /dev/null}; then
+    if type fd &> /dev/null; then
         if [[ -z "$show_hidden" ]]; then
-            fd $color_param -I . "$pwd"
+            fd $color_param -I . "$PWD"
         else
-            fd $color_param -IH . "$pwd"
+            fd $color_param -IH . "$PWD"
         fi
     else
         if [[ -z "$show_hidden" ]]; then
-            find "$pwd" -not -path '*/\.*'
+            find "$PWD" -not -path '*/\.*'
         else
-            find "$pwd"
+            find "$PWD"
         fi
     fi
 }

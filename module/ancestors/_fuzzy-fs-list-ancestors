@@ -1,11 +1,11 @@
 #!/bin/zsh
 
 function _fuzzy-fs-list-ancestors {
-    local filename=$*
+    local filename=$PWD
     local relative=..
     while [[ $filename != / ]]; do
         filename=$(dirname $filename)
-        echo $ancestor_icon" "$relative$'\t'$filename
+        fzf_items+=("$ancestor_icon $relative \t $filename")
         relative=$relative.
     done
 }
