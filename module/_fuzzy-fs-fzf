@@ -7,24 +7,25 @@ function _fuzzy-fs-fzf {
     local cmd=$argv[1]
     local expect=$argv[2]
 
-    local res
-    res=$(
-        ${=cmd} $pwd | \
-            fzf --prompt="Filter: " \
-                $no_color \
-                --no-sort \
-                --no-multi \
-                --header="$header" \
-                --print-query \
-                --query="$init_query" \
-                --height=100% \
-                $color_param \
-                --preview="$preview_command {-1}" \
-                --bind "Ctrl-C:cancel" \
-                --expect "$expect"
-       )
+    local res=()
+    ${=cmd} $pwd | \
+        fzf --prompt="Filter: " \
+            $no_color \
+            --no-sort \
+            --no-multi \
+            --header="$header" \
+            --print-query \
+            --query="$init_query" \
+            --height=100% \
+            $color_param \
+            --preview="$preview_command {-1}" \
+            --bind "Ctrl-C:cancel" \
+            --expect "$expect" | \
+        while read line; do
+            res+=("$line")
+        done
     local fzf_status=$?
-    res=("${(f@)res}")
+    # res=("${(f@)res}")
 
     # handle fzf return value
     case "$fzf_status" in
