@@ -17,7 +17,11 @@ filename=$argv[$ARGC]
 if [[ -d "$filename" ]]; then
     echo "$(basename $filename)" is a directory:
     echo
-    ls -la $color_param "$filename"
+    if type exa &> /dev/null; then
+        exa -la $color_param "$filename"
+    else
+        ls -la $color_param "$filename"
+    fi
 elif [[ -f "$filename" ]]; then
     ${=less_command} "$filename"
 fi
