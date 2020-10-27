@@ -28,8 +28,6 @@ function _fuzzy-fs-fzf {
 
     # handle fzf return value
     case "$fzf_status" in
-        # no match
-        1) res=() ;;
         # error
         2) res=("error" "error" "error") ;;
         # interrupted
