@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+function _fuzzy-fs-fzf {
+    # run fzf, filter the result of commands, and parse the result
+    # before calling this function, should have local variables `query`, `key` and `item`
+    local field=fzf
+    local cmd=$argv[1]
+    local expect=$argv[2]
+
+    local res
+    res=$(
+        ${=cmd} $pwd | \
+            fzf --prompt="Filter: " \
+                $no_color \
+                --no-sort \
+                --no-multi \
+                --header="$header" \
+                --print-query \
+                --query="$init_query" \
+                --height=100% \
+                $color_param \
+                --preview="$preview_command {-1}" \
+                --bind "Ctrl-C:cancel" \
+                --expect "$expect"
+       )
+    local fzf_status=$?
+    res=("${(f@)res}")
+
+    # handle fzf return value
+    case "$fzf_status" in
+        # no match
+        1) res=() ;;
+        # error
+        2) res=("error" "error" "error") ;;
+        # interrupted
+        130) res=("interrupt" "interrupt" "interrupt") ;;
+    esac
+
+    # if fzf returned successfully
+    query=$res[1]
+    key=$res[2]
+    item=$res[3]
+    # When users select with mouse
+    if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
+        key=click
+    fi
+
+    _fuzzy-fs-debug-var fzf_status
+    _fuzzy-fs-debug-var query
+    _fuzzy-fs-debug-var key
+    _fuzzy-fs-debug-var item
+}

@@ -60,49 +60,12 @@ function _fuzzy-fs-ls-panel {
         _fuzzy-fs-list-recent-dir
     }
 
-    # show fzf and get result
-    local res
-    res=$(
-        _fuzzy-fs-list-all $pwd | \
-            fzf --prompt="Filter: " \
-                $no_color \
-                --no-sort \
-                --no-multi \
-                --header="$header" \
-                --print-query \
-                --query="$init_query" \
-                --height=100% \
-                $color_param \
-                --preview="$preview_command $no_color $pwd/{-1}" \
-                --bind "Ctrl-C:cancel" \
-                --expect "$key_enter,$key_delete,$key_exit,$key_refresh,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell,$key_toggle_per_directory_history"
-       )
-    local fzf_status=$?
-    res=("${(f)res}")
-
-    # handle fzf return value
-    case "$fzf_status" in
-        # no match
-        1) res=() ;;
-        # error
-        2) return 1 ;;
-        # interrupted
-        130) res=("" "$key_exit" "")
-    esac
-
-    # if fzf returned successfully
     local key item
-    query=$res[1]
-    key=$res[2]
-    item=$res[3]
-    # When users select with mouse
-    if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
-        key=$key_enter
-    fi
+    _fuzzy-fs-fzf _fuzzy-fs-list-all "$key_enter,$key_delete,$key_exit,$key_refresh,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell,$key_toggle_per_directory_history"
 
     [[ "$pwd" == "/" ]] && pwd=""
     case "$key" in
-        $key_enter)
+        click|$key_enter)
             case "$item" in
                 "$command_icon"*)
                     cmd=run
@@ -175,8 +138,11 @@ function _fuzzy-fs-ls-panel {
         $key_refresh)
             cmd=refresh
             ;;
-        $key_exit)
+        interrupt|$key_exit)
             cmd=exit
+            ;;
+        error)
+            cmd=error
             ;;
     esac
 }

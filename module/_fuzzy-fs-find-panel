@@ -36,47 +36,12 @@ function _fuzzy-fs-find-panel {
     header+="Directory: $pwd"
     header+=$'\n'" "
 
-    # show fzf and get result
-    local res
-    res=$(
-        _fuzzy-fs-find-recursively $pwd | \
-            fzf --prompt="Filter: " \
-                --no-multi \
-                --header="$header" \
-                --print-query \
-                --query="$init_query" \
-                --height=100% \
-                $color_param \
-                --preview="$preview_command {-1}" \
-                --bind "Ctrl-C:cancel" \
-                --expect "$key_enter,$key_toggle_hidden,$key_exit,$key_refresh,$key_shell,$key_edit,$key_abort,$key_parent"
-       )
-    local fzf_status=$?
-    res=("${(f)res}")
-
-    # handle fzf return value
-    case "$fzf_status" in
-        # no match
-        1) res=() ;;
-        # error
-        2) return 1 ;;
-        # interrupted
-        130) res=("" "$key_exit" "")
-    esac
-
-    # if fzf returned successfully
     local key item
-    query=$res[1]
-    key=$res[2]
-    item=$res[3]
-    # When users select with mouse
-    if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
-        key=$key_enter
-    fi
+    _fuzzy-fs-fzf _fuzzy-fs-find-recursively "$key_enter,$key_toggle_hidden,$key_exit,$key_refresh,$key_shell,$key_edit,$key_abort,$key_parent"
 
     next_panel=_fuzzy-fs-ls-panel
     case "$key" in
-        $key_enter)
+        click|$key_enter)
             cmd=cd
             if [[ -f $item ]]; then
                 target=$(dirname $item)
@@ -90,9 +55,6 @@ function _fuzzy-fs-find-panel {
             ;;
         $key_abort)
             cmd=refresh
-            ;;
-        $key_exit)
-            cmd=exit
             ;;
         $key_refresh)
             next_panel=_fuzzy-fs-find-panel
@@ -116,6 +78,12 @@ function _fuzzy-fs-find-panel {
             else
                 target=$filename
             fi
+            ;;
+        interrupt|$key_exit)
+            cmd=exit
+            ;;
+        error|$key_exit)
+            cmd=error
             ;;
     esac
 }
