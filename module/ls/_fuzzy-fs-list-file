@@ -11,12 +11,12 @@ function _fuzzy-fs-list-file {
     local shown_hidden=""
     case $ls_command in
         exa)
-            params="-l --git"
-            start_line=1
+            params="-lh --git"
+            start_line=2
             [[ ! -z "$show_hidden" ]] && local hidden_param=-a
             ;;
         ls)
-            params="-l"
+            params="-lh"
             start_line=2
             [[ ! -z "$show_hidden" ]] && local hidden_param=-A
             ;;
@@ -33,9 +33,21 @@ function _fuzzy-fs-list-file {
     _fuzzy-fs-debug-var hidden_param
     _fuzzy-fs-debug-var start_line
 
-    local res=$($ls_command ${=params} $color_param $hidden_param | tail -n+"$start_line")
-    res=("${(f@)res}")
-    for line in $res; do
+    local ls_res=$($ls_command ${=params} $color_param $hidden_param)
+    ls_res=("${(f@)ls_res}")
+    local header=$ls_res[1]
+    local items=($ls_res[$start_line,-1])
+
+    # count the column number to know which column is filename
+    case $ls_command in
+        exa) filename_column=$(($(echo $header | wc -w)+1)) ;;
+        ls) filename_column=9 ;;
+    esac
+
+    _fuzzy-fs-debug-var filename_column
+
+    # TODO: don't do sed repeatly
+    for line in $items; do
         uncolored_line=$(echo $line | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g')
         case $uncolored_line[1] in
             d) echo $directory_icon $line ;;
