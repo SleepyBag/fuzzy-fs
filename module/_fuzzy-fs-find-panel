@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 function _fuzzy-fs-find-panel {
-    local field=_fuzzy-fs-find-panel
+    local field=find-panel
 
     # key bindings
     local key_enter=${FUZZY_FS_KEY_ENTER:-Enter}
@@ -68,6 +68,10 @@ function _fuzzy-fs-find-panel {
     query=$(echo $res | head -n1)
     key=$(echo $res | head -n2 | tail -n1)
     item=$(echo $res | tail -n+3)
+    # When users select with mouse
+    if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
+        key=$key_enter
+    fi
 
     next_panel=_fuzzy-fs-ls-panel
     case "$key" in

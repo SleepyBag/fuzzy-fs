@@ -94,6 +94,10 @@ function _fuzzy-fs-ls-panel {
     query=$(echo $res | head -n1)
     key=$(echo $res | head -n2 | tail -n1)
     item=$(echo $res | tail -n+3)
+    # When users select with mouse
+    if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
+        key=$key_enter
+    fi
 
     [[ "$pwd" == "/" ]] && pwd=""
     case "$key" in
