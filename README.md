@@ -22,11 +22,11 @@ zplug "SleepyBag/fuzzy-fs", use:fuzzy-fs
 
 - [z](https://github.com/rupa/z "z") (to list recent files, you don't need autojump if you have z)
 - [autojump](https://github.com/wting/autojump "autojump") (to list recent files, you don't need z if you have autojump)
-- [k](https://github.com/supercrabtree/k "k") (to show git information in file list)
+- [exa](https://github.com/ogham/exa "exa") (to show colorful file list with git information)
 - [bat](https://github.com/sharkdp/bat "bat") (for colored preview)
 - [fd](https://github.com/sharkdp/fd "fd") (for faster and colored find)
 
-# usage
+# Usage
 
 Just run `fuzzy-fs` in your shell, then you are easy to go.
 
@@ -59,6 +59,23 @@ Hit `Ctrl-I` to open a new shell, `Ctrl-O` to edit a file. If you are in a tmux 
 If you are not in a tmux session, the new shell will be opened in a new terminal window, which is defined by environment variable `$TERMINAL`, and how editor acts depends on varialbe `$EDITOR`.
 
 ![fuzzy-fs: tmux](https://raw.githubusercontent.com/SleepyBag/fuzzy-fs/readme/demonstration/tmux.gif "fuzzy-fs: tmux")
+
+# Configuration
+
+## Icons
+
+You may find that some icons aren't shown well in your terminal because of font. If you need to use some different icons, you can set the following variables:
+
+| variable name            | meaning                      | default value |
+|--------------------------|------------------------------|---------------|
+| FUZZY_FS_FILE_ICON       | icon of files                |  fl          |
+| FUZZY_FS_LINK_ICON       | icon of links                |  lk          |
+| FUZZY_FS_ANCESTOR_ICON   | icon of ancestor directories |  up          |
+| FUZZY_FS_DIRECTORY_ICON  | icon of directories          |  dr          |
+| FUZZY_FS_COMMAND_ICON    | icon of history command      |  cm          |
+| FUZZY_FS_RECENT_DIR_ICON | icon of hisotry directories  |  rf          |
+
+If you see white blocks in the table. Don't be confused. They are initially icons. **These variables can be set as any string but not empty** because `fuzzy-fs` uses icon to determine the action it takes.
 
 # Contributing
 

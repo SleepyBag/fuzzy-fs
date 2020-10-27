@@ -51,13 +51,13 @@ function _fuzzy-fs-ls-panel {
     header+=$'\n'" "
 
     function _fuzzy-fs-list-all {
-        ${=ls_command} $*
+        _fuzzy-fs-list-file $*
         echo ""
-        ${=list_ancestors_command} $*
+        _fuzzy-fs-list-ancestors $*
         echo ""
-        ${=history_command} $*
+        _fuzzy-fs-list-history $*
         echo ""
-        ${=ls_recent_command}
+        _fuzzy-fs-list-recent-dir
     }
 
     # show fzf and get result
@@ -78,22 +78,23 @@ function _fuzzy-fs-ls-panel {
                 --expect "$key_enter,$key_delete,$key_exit,$key_refresh,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell,$key_toggle_per_directory_history"
        )
     local fzf_status=$?
+    res=("${(f)res}")
 
     # handle fzf return value
     case "$fzf_status" in
         # no match
-        1) res+=$'\n' ;;
+        1) res=() ;;
         # error
         2) return 1 ;;
         # interrupted
-        130) res=$'\n'"$key_exit"$'\n'
+        130) res=("" "$key_exit" "")
     esac
 
     # if fzf returned successfully
     local key item
-    query=$(echo $res | head -n1)
-    key=$(echo $res | head -n2 | tail -n1)
-    item=$(echo $res | tail -n+3)
+    query=$res[1]
+    key=$res[2]
+    item=$res[3]
     # When users select with mouse
     if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
         key=$key_enter
@@ -110,31 +111,16 @@ function _fuzzy-fs-ls-panel {
                 "$directory_icon"*)
                     cmd=cd
                     item=$item[$(($#directory_icon+2)),-1]
-                    if [[ ! -z "$k_available" ]]; then
-                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
-                      target=$pwd/$target
-                    else
-                      target=$pwd/$(echo $item | awk '{print $NF}')
-                    fi
+                    target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     ;;
                 "$file_icon"*)
                     cmd=open
                     item=$item[$(($#file_icon+2)),-1]
-                    if [[ ! -z "$k_available" ]]; then
-                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
-                      target=$pwd/$target
-                    else
-                      target=$pwd/$(echo $item | awk '{print $NF}')
-                    fi
+                    target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     ;;
                 "$link_icon"*)
                     item=$item[$(($#link_icon+2)),-1]
-                    if [[ ! -z "$k_available" ]]; then
-                      target=$(echo $item | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g' | sed -r 's/^([^ ]* *){7}[^ ]*...([^ ]*).*$/\2/')
-                      target=$pwd/$target
-                    else
-                      target=$pwd/$(echo $item | awk '{print $NF}')
-                    fi
+                    target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     [[ -d $target ]] && cmd=cd || cmd=open
                     ;;
                 "$ancestor_icon"*|"$recent_dir_icon"*)
