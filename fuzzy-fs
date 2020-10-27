@@ -82,7 +82,7 @@ EOF
     if type exa &> /dev/null; then
         ls_command=exa
     else
-        ls_commans=ls
+        ls_command=ls
     fi
 
     # icons cannot be empty because they are neccessary to determine the item type
