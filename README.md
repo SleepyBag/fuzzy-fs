@@ -62,6 +62,16 @@ If you are not in a tmux session, the new shell will be opened in a new terminal
 
 # Configuration
 
+## Customizable Commands
+
+Maybe you don't like some commands used in `fuzzy-fs`. For example, maybe you prefer `ls` to `exa`. Here are some customizable commands.
+
+| variable name             | meaning                            | default value       | Notes                                                                                |
+|---------------------------|------------------------------------|---------------------|--------------------------------------------------------------------------------------|
+| FUZZY_FS_OPEN_COMMAND     | the command to open a file         | `xdg-open`          |                                                                                      |
+| FUZZY_FS_LS_COMMAND       | the command to list files          | `exa` or `ls`       | only `exa` and `ls` are supported                                                    |
+| FUZZY_FS_TERMINAL_COMMAND | the command to open a new terminal | `konsole --workdir` | read the manual of your terminal emulator to know how to specify a working directory |
+
 ## Icons
 
 You may find that some icons aren't shown well in your terminal because of font. If you need to use some different icons, you can set the following variables:

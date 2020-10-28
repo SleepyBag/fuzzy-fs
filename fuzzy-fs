@@ -62,13 +62,13 @@ EOF
     # environment params
     local ffs_shell=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
     local ffs_editor=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
-    local ffs_terminal=${TERMINAL:-$(_fuzzy-fs-first-available-command konsole gnome-terminal terminology xterm)}
     local ffs_pager=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
 
     # tunable commands
     local open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
     local preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/_fuzzy-fs-preview}
     local ls_command=${FUZZY_FS_LS_COMMAND:-$(_fuzzy-fs-first-available-command exa ls)}
+    local terminal_command=${FUZZY_FS_TERMINAL_COMMAND:-$(_fuzzy-fs-first-available-command "konsole --workdir" "gnome-terminal --working-directory" "terminology -d")}
 
     # tunable icons
     local file_icon=${FUZZY_FS_FILE_ICON:- fl}
