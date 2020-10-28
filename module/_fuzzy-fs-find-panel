@@ -37,7 +37,10 @@ function _fuzzy-fs-find-panel {
     header+=$'\n'" "
 
     local key item
-    _fuzzy-fs-fzf _fuzzy-fs-find-recursively "$key_enter,$key_toggle_hidden,$key_exit,$key_refresh,$key_shell,$key_edit,$key_abort,$key_parent"
+    local pre_cmds=()
+    local incremental_cmds=("_fuzzy-fs-find-recursively $pwd")
+    local expect="$key_enter,$key_toggle_hidden,$key_exit,$key_refresh,$key_shell,$key_edit,$key_abort,$key_parent"
+    _fuzzy-fs-fzf
 
     next_panel=_fuzzy-fs-ls-panel
     case "$key" in

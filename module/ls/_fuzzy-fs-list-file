@@ -50,9 +50,9 @@ function _fuzzy-fs-list-file {
     for line in $items; do
         uncolored_line=$(echo $line | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g')
         case $uncolored_line[1] in
-            d) echo $directory_icon $line ;;
-            l) echo $link_icon $line ;;
-            *) echo $file_icon $line ;;
+            d) res+=("$directory_icon $line") ;;
+            l) res+=("$link_icon $line") ;;
+            *) res+=("$file_icon $line") ;;
         esac
     done
 

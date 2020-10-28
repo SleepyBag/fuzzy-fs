@@ -4,41 +4,51 @@ function _fuzzy-fs-fzf {
     # run fzf, filter the result of commands, and parse the result
     # before calling this function, should have local variables `query`, `key` and `item`
     local field=fzf
-    local cmd=$argv[1]
-    local expect=$argv[2]
 
+    # run the pre-command, collect the result by $res
     local res=()
-    ${=cmd} $pwd | \
-        fzf --prompt="Filter: " \
-            $no_color \
-            --no-sort \
-            --no-multi \
-            --header="$header" \
-            --print-query \
-            --query="$init_query" \
-            --height=100% \
-            $color_param \
-            --preview="$preview_command {-1}" \
-            --bind "Ctrl-C:cancel" \
-            --expect "$expect" | \
+    for pre_cmd in $pre_cmds; do
+        ${=pre_cmd}
+    done
+    function _ffs-echo-pre-cmd {
+        for line in $res; do
+            echo $line
+        done
+    }
+
+    local fzf_res=()
+    local cmds=(_ffs-echo-pre-cmd $incremental_cmds)
+    for cmd in $cmds; do
+        ${=cmd}
+    done | fzf --prompt="Filter: " \
+               $no_color \
+               --no-sort \
+               --no-multi \
+               --header="$header" \
+               --print-query \
+               --query="$init_query" \
+               --height=100% \
+               $color_param \
+               --preview="$preview_command {-1}" \
+               --bind "Ctrl-C:cancel" \
+               --expect "$expect" | \
         while read line; do
-            res+=("$line")
+            fzf_res+=("$line")
         done
     local fzf_status=$?
-    # res=("${(f@)res}")
 
     # handle fzf return value
     case "$fzf_status" in
         # error
-        2) res=("error" "error" "error") ;;
+        2) fzf_res=("error" "error" "error") ;;
         # interrupted
-        130) res=("interrupt" "interrupt" "interrupt") ;;
+        130) fzf_res=("interrupt" "interrupt" "interrupt") ;;
     esac
 
     # if fzf returned successfully
-    query=$res[1]
-    key=$res[2]
-    item=$res[3]
+    query=$fzf_res[1]
+    key=$fzf_res[2]
+    item=$fzf_res[3]
     # When users select with mouse
     if [[ "$fzf_status" = 0 && "$key" = "" ]]; then
         key=click
