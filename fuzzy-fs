@@ -21,6 +21,7 @@ function fuzzy-fs {
             H=no_header    -no-header=no_header \
                             -no-color=no_color \
             a=show_hidden  -all=show_hidden \
+            g=show_git     -git=show_git \
             d=debug_mode   -debug=debug_mode \
             h=help         -help=help \
             V=version      -version=version
@@ -36,7 +37,8 @@ Open a file navigator powered by fzf at DIR.
 Options:
     -a    --all          list hidden files
     -H    --no-header    don't show key-binding tips in header
-        --no-color     disable color
+          --no-color     disable color
+    -g    --git          show git info in the file list (requires exa)
     -d    --debug-mode   output debug info into log file
     -V    --version      show version
     -h    --help         show this help
