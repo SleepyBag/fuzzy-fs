@@ -4,9 +4,9 @@ function _fuzzy-fs-open-shell {
     local pwd=$*
     if [[ ! -z $TMUX ]]; then
         tmux new-window -c "$pwd" -n "dir $(basename $pwd)"
-    elif type "$TERMINAL" &> /dev/null; then
-        $TERMINAL --workdir $pwd &> /dev/null &
+    elif type "$ffs_terminal" &> /dev/null; then
+        $ffs_terminal --workdir $pwd &> /dev/null &
     else
-        $SHELL
+        $ffs_shell
     fi
 }

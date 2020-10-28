@@ -10,7 +10,6 @@ function fuzzy-fs {
     local log_file=$base_dir/.log
 
     # load all functions
-    local fpath
     for dir in $(cd $base_dir; find . -type d -not -path '*/\.*'); do
         fpath+=($base_dir/$dir)
         autoload -Uz $(ls -p $base_dir/$dir | grep -v /)
@@ -61,10 +60,10 @@ EOF
     fi
 
     # environment params
-    local EDITOR=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
-    local SHELL=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
-    local TERMINAL=${TERMINAL:-$(_fuzzy-fs-first-available-command konsole gnome-terminal terminology xterm)}
-    local PAGER=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
+    local ffs_shell=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
+    local ffs_editor=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
+    local ffs_terminal=${TERMINAL:-$(_fuzzy-fs-first-available-command konsole gnome-terminal terminology xterm)}
+    local ffs_pager=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
 
     # tunable commands
     local open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
