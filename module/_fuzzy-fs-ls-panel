@@ -53,11 +53,11 @@ function _fuzzy-fs-ls-panel {
     local key item
     local pre_cmds=("_fuzzy-fs-list-file $pwd")
     local incremental_cmds=(
-        "echo ===== Parents Directories ===================================="
+        "echo $ancestor_separator"
         "_fuzzy-fs-list-ancestors $pwd"
-        "echo ===== Command History ========================================"
+        "echo $command_separator"
         "_fuzzy-fs-list-history $pwd"
-        "echo ===== Recent Directories ====================================="
+        "echo $recent_dir_separator"
         "_fuzzy-fs-list-recent-dir $pwd")
     local expect="$key_enter,$key_delete,$key_exit,$key_refresh,$key_parent,$key_edit,$key_run_query,$key_find,$key_toggle_hidden,$key_shell,$key_toggle_per_directory_history"
     _fuzzy-fs-fzf

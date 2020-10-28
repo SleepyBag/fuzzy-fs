@@ -78,6 +78,11 @@ EOF
     local command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
     local recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
 
+    # tunable separator
+    local ancestor_separator=$FUZZY_FS_ANCESTOR_SEPARATOR
+    local command_separator=$FUZZY_FS_COMMAND_SEPARATOR
+    local recent_dir_separator=$FUZZY_FS_RECENT_DIR_SEPARATOR
+
     # icons cannot be empty because they are neccessary to determine the item type
     _fuzzy-fs-check-empty  file_icon       link_icon     ancestor_icon  \
                            directory_icon  command_icon  recent_dir_icon

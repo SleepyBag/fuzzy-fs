@@ -74,7 +74,7 @@ Maybe you don't like some commands used in `fuzzy-fs`. For example, maybe you pr
 
 ## Icons
 
-You may find that some icons aren't shown well in your terminal because of font. If you need to use some different icons, you can set the following variables:
+You may find that some icons aren't shown well in your terminal because of font. If you need to use some different icons, you can set the following variables.
 
 | variable name            | meaning                      | default value |
 |--------------------------|------------------------------|---------------|
@@ -86,6 +86,16 @@ You may find that some icons aren't shown well in your terminal because of font.
 | FUZZY_FS_RECENT_DIR_ICON | icon of hisotry directories  |  rf          |
 
 If you see white blocks in the table. Don't be confused. They are initially icons. **These variables can be set as any string but not empty** because `fuzzy-fs` uses icon to determine the action it takes.
+
+## Separators
+
+If you want some fancy separator instead of blank lines between `fuzzy-fs` modules, you can customize the following variables.
+
+| variable name                 | meaning                                    |
+|-------------------------------|--------------------------------------------|
+| FUZZY_FS_ANCESTOR_SEPARATOR   | separator before ancestor directory module |
+| FUZZY_FS_COMMAND_SEPARATOR    | separator before history command module    |
+| FUZZY_FS_RECENT_DIR_SEPARATOR | separator before rencent directory module  |
 
 # Contributing
 
