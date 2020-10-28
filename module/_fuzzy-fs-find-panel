@@ -51,6 +51,7 @@ function _fuzzy-fs-find-panel {
             else
                 target=$item
             fi
+            target=$(printf %q $target)
             ;;
         $key_toggle_hidden)
             next_panel=_fuzzy-fs-find-panel
@@ -67,6 +68,7 @@ function _fuzzy-fs-find-panel {
             cmd=edit
             local filename=$item
             target=$filename
+            target=$(printf %q $target)
             ;;
         $key_parent)
             next_panel=_fuzzy-fs-find-panel

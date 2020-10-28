@@ -76,20 +76,24 @@ function _fuzzy-fs-ls-panel {
                     cmd=cd
                     item=$item[$(($#directory_icon+2)),-1]
                     target=$pwd/$(_fuzzy-fs-parse-file-item $item)
+                    target=$(printf %q $target)
                     ;;
                 "$file_icon"*)
                     cmd=open
                     item=$item[$(($#file_icon+2)),-1]
                     target=$pwd/$(_fuzzy-fs-parse-file-item $item)
+                    target=$(printf %q $target)
                     ;;
                 "$link_icon"*)
                     item=$item[$(($#link_icon+2)),-1]
                     target=$pwd/$(_fuzzy-fs-parse-file-item $item)
                     [[ -d $target ]] && cmd=cd || cmd=open
+                    target=$(printf %q $target)
                     ;;
                 "$ancestor_icon"*|"$recent_dir_icon"*)
                     cmd=cd
                     target=$(echo $item | awk '{print $NF}')
+                    target=$(printf %q $target)
                     ;;
             esac
             ;;
@@ -100,10 +104,12 @@ function _fuzzy-fs-ls-panel {
         $key_delete)
             cmd=rm
             target=$pwd/$(echo $item | awk '{print $NF}')
+            target=$(printf %q $target)
             ;;
         $key_edit)
             cmd=edit
             target=$pwd/$(echo $item | awk '{print $NF}')
+            target=$(printf %q $target)
             ;;
         $key_find)
             next_panel=_fuzzy-fs-find-panel
