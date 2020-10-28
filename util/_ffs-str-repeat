@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+function _ffs-str-repeat {
+    printf "$1%.0s" {1..$2}
+}
