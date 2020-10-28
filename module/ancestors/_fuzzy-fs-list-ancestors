@@ -2,10 +2,18 @@
 
 function _fuzzy-fs-list-ancestors {
     local filename=$*
-    local relative=..
+    local layer_cnt=0
     while [[ $filename != / ]]; do
         filename=$(dirname $filename)
-        echo $ancestor_icon" "$relative$'\t'$filename
-        relative=$relative.
+        layer_cnt=$(($layer_cnt+1))
+    done
+    filename=$*
+    local relative=..$(_ffs-str-repeat " " $layer_cnt)
+    local cur_layer=3
+    while [[ $filename != / ]]; do
+        filename=$(dirname $filename)
+        echo $ancestor_icon" "$relative"   "$filename
+        relative[$cur_layer]=.
+        cur_layer=$(($cur_layer+1))
     done
 }
