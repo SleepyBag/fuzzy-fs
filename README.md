@@ -99,7 +99,7 @@ If you want some fancy separator instead of blank lines between `fuzzy-fs` modul
 
 # Known Issues
 
-- If there is a link with " -> " in its name, it will not be opened. Though this situation is nearly unpossible.
+- If there is a link with " -> " in its name, it will not be opened. Though this situation is nearly impossible.
 
 # Contributing
 
