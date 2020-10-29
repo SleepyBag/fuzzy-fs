@@ -97,6 +97,10 @@ If you want some fancy separator instead of blank lines between `fuzzy-fs` modul
 | FUZZY_FS_COMMAND_SEPARATOR    | separator before history command module    |
 | FUZZY_FS_RECENT_DIR_SEPARATOR | separator before rencent directory module  |
 
+# Known Issues
+
+- If there is a link with " -> " in its name, it will not be opened. Though this situation is nearly unpossible.
+
 # Contributing
 
 As you can see, this is a new project. Anyone is welcomed to report a bug, give an idea, request a feature, or start a merge request. Help me to make it better!

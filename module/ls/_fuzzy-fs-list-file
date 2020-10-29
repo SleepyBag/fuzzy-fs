@@ -19,7 +19,7 @@ function _fuzzy-fs-list-file {
             [[ ! -z "$show_hidden" ]] && local hidden_param=-a
             ;;
         ls)
-            params="-lh"
+            params="-lh --quoting-style=literal"
             start_line=2
             [[ ! -z "$show_hidden" ]] && local hidden_param=-A
             ;;

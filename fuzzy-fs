@@ -113,11 +113,11 @@ EOF
         local pre_query=""
         case "$cmd" in
             open)
-                zsh -c "${=open_command} $target" &> /dev/null
+                zsh -c "${=open_command} \"$target\"" &> /dev/null
                 ;;
             cd)
                 local old_path=$PWD
-                cd $target
+                cd "$target"
                 # if you are using z or autojump
                 _fuzzy-fs-add-recent-dir $PWD
                 # if you are using per-directory-history
@@ -126,7 +126,7 @@ EOF
                 fi
                 ;;
             rm)
-                rm -ir $target
+                rm -ir "$target"
                 ;;
             edit)
                 _fuzzy-fs-edit "$PWD" "$target"
