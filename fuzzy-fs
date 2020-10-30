@@ -77,6 +77,7 @@ EOF
     local directory_icon=${FUZZY_FS_DIRECTORY_ICON:- dr}
     local command_icon=${FUZZY_FS_COMMAND_ICON:- cm}
     local recent_dir_icon=${FUZZY_FS_RECENT_DIR_ICON:- rf}
+    export file_icon link_icon ancestor_icon directory_icon command_icon recent_dir_icon
 
     # tunable separator
     local ancestor_separator=$FUZZY_FS_ANCESTOR_SEPARATOR

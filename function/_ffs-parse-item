@@ -1,0 +1,63 @@
+#!/bin/zsh
+
+function _ffs-parse-item {
+    # for debug
+    local field=parse-file-item
+
+    local item=$*
+
+    local target_column=$filename_column
+    local is_link
+    # strip off icon
+    case "$item" in
+        "$command_icon"*)
+            item=$item[$(($#command_icon+1)),-1]
+            target_column=1
+            ;;
+        "$directory_icon"*)
+            item=$item[$(($#directory_icon+2)),-1]
+            ;;
+        "$file_icon"*)
+            item=$item[$(($#file_icon+2)),-1]
+            ;;
+        "$link_icon"*)
+            item=$item[$(($#link_icon+2)),-1]
+            is_link=1
+            ;;
+        "$ancestor_icon"*)
+            item=$item[$(($#ancestor_icon+2)),-1]
+            target_column=2
+            ;;
+        "$recent_dir_icon"*)
+            item=$item[$(($#recent_dir_icon+2)),-1]
+            target_column=1
+            ;;
+    esac
+
+    # strip off color
+    local item=$(echo "$item" | sed $'s/\e\\[[0-9;:]*[a-zA-Z]//g')
+
+    # find the target column
+    local i=0
+    local cur_column=1
+    local ch prech
+    while [[ $cur_column != $target_column ]]; do
+        ch=$item[$((++i))]
+        if [[ "$ch" != ' ' && "$prech" == ' ' ]]; then
+            cur_column=$((cur_column+1))
+        fi
+        prech=$ch
+    done
+
+    # if the file is not a link, the file name spans from the target column to the end
+    local target=$item[$i,-1]
+    # otherwise remove anything after the " -> " sign
+    if [[ ! -z "$is_link" ]]; then
+        target=$(echo "$target" | grep -o ".* -> ")
+        target=$target[1,-5]
+    fi
+
+    _fuzzy-fs-debug-var item
+    _fuzzy-fs-debug-var target
+    echo $target
+}

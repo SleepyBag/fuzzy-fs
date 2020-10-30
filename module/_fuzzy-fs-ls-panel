@@ -66,49 +66,14 @@ function _fuzzy-fs-ls-panel {
 
     [[ "$pwd" == "/" ]] && pwd=""
 
-    # parse the target first
-    local target_command target_dir target_file target_tmp
-    case "$item" in
-        "$command_icon"*)
-            target_command=$item[$(($#command_icon+1)),-1]
-            ;;
-        "$directory_icon"*)
-            item=$item[$(($#directory_icon+2)),-1]
-            target_dir=$pwd/$(_fuzzy-fs-parse-file-item $item)
-            ;;
-        "$file_icon"*)
-            item=$item[$(($#file_icon+2)),-1]
-            target_file=$pwd/$(_fuzzy-fs-parse-file-item $item)
-            ;;
-        "$link_icon"*)
-            item=$item[$(($#link_icon+2)),-1]
-            target_tmp=$pwd/$(_fuzzy-fs-parse-file-item $item)
-            if [[ -d "$target_tmp" ]]; then
-                target_dir=$target_tmp
-            else
-                target_file=$target_tmp
-            fi
-            ;;
-        "$ancestor_icon"*)
-            # TODO: deal with spaces in file name
-            target_dir=$(echo $item | awk '{print $NF}')
-            ;;
-        "$recent_dir_icon"*)
-            target_dir=$item[$(($#recent_dir_icon+2)),-1]
-            ;;
-    esac
-
     # then determine cmd
     case "$key" in
         click|$key_enter)
-            if [[ ! -z "$target_command" ]]; then
+            if [[ "$item" = "$command_icon"* ]]; then
                 cmd=run
-            elif [[ ! -z "$target_dir" ]]; then
-                cmd=cd
-            elif [[ ! -z "$target_file" ]]; then
-                cmd=open
+            else
+                cmd=cd-or-open
             fi
-            target=${target_command:-${target_dir:-$target_file}}
             ;;
         $key_parent)
             cmd=cd
@@ -116,15 +81,14 @@ function _fuzzy-fs-ls-panel {
             ;;
         $key_delete)
             cmd=rm
-            target=${target_dir:-$target_file}
             ;;
         $key_edit)
             cmd=edit
-            target=${target_dir:-$target_file}
             ;;
         $key_find)
             next_panel=_fuzzy-fs-find-panel
             cmd=refresh
+            target=none
             ;;
         $key_run_query)
             cmd=run
@@ -132,9 +96,11 @@ function _fuzzy-fs-ls-panel {
             ;;
         $key_toggle_hidden)
             cmd=toggle_hidden
+            target=none
             ;;
         $key_toggle_per_directory_history)
             cmd=toggle_per_directory_history
+            target=none
             ;;
         $key_shell)
             cmd=shell
@@ -142,12 +108,31 @@ function _fuzzy-fs-ls-panel {
             ;;
         $key_refresh)
             cmd=refresh
+            target=none
             ;;
         interrupt|$key_exit)
             cmd=exit
+            target=none
             ;;
         error)
             cmd=error
+            target=none
             ;;
     esac
+
+    # parse the target first
+    if [[ -z "$target" ]]; then
+        target=$(_ffs-parse-item "$item")
+        if [[ "$item" != "$command_icon"* && "$target" != /* ]]; then
+            target="$pwd"/"$target"
+        fi
+    fi
+
+    if [[ "$cmd" = cd-or-open ]]; then
+        if [[ -d "$target" ]]; then
+            cmd=cd
+        else
+            cmd=open
+        fi
+    fi
 }
