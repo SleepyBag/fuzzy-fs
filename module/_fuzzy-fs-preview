@@ -18,5 +18,12 @@ if [[ -d "$target" ]]; then
         ls -la $color_param "$target"
     fi
 elif [[ -f "$target" ]]; then
-    ${=pager_command} "$target"
+    case "$target" in
+        *.pdf)
+            pdftotext "$target" - | ${=pager_command}
+            ;;
+        *)
+            ${=pager_command} "$target"
+            ;
+    esac
 fi
