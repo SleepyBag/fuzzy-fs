@@ -5,7 +5,7 @@ function _fuzzy-fs-edit {
     local pwd=$1
     local target=$2
     if [[ -z $TMUX ]]; then
-        $ffs_editor $target
+        $editor_command $target
     else
         tmux new-window -c "$pwd" -n "edit $(basename $target)" "$EDITOR" "$target"
     fi

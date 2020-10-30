@@ -52,6 +52,8 @@ function _fuzzy-fs-ls-panel {
 
     local key item
     local pre_cmds=("_fuzzy-fs-list-file $pwd")
+    local filename_column
+    export filename_column
     local incremental_cmds=(
         "echo $ancestor_separator"
         "_fuzzy-fs-list-ancestors $pwd"

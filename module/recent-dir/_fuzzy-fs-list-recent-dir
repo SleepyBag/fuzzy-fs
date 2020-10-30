@@ -4,7 +4,7 @@ function _fuzzy-fs-list-recent-dir {
     local field=list-rencent-dir
     # if you use z to jump between directories
     if {which _z &> /dev/null}; then
-        _z -l 2>&1 | tac | awk '{for(i=2; i<=NF; ++i) printf "%s ", $i; print ""}' | sed "s/^/$recent_dir_icon /"
+        _z -l 2>&1 | tac | grep "/.*" -o | sed "s/^/$recent_dir_icon /"
     fi
     # if you use autojump
     if {which autojump &> /dev/null}; then

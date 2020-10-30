@@ -1,27 +1,22 @@
 #!/bin/zsh
 
-zparseopts -no-color=no_color \
-           a=show_hidden \
-           d=debug_mode
-[[ -z "$no_color" ]] && color_param=--color=always
-
-if {which bat &> /dev/null}; then
-    less_command="bat -p $color_param"
-elif {which less &> /dev/null}; then
-    less_command="less"
+if [[ -z "$no_color" ]]; then
+    color_param=--color=always
 else
-    less_command="more"
+    color_param=--color=never
 fi
 
-filename=$argv[$ARGC]
-if [[ -d "$filename" ]]; then
-    echo "$(basename $filename)" is a directory:
+target=$($base_dir/function/_ffs-parse-item $*)
+[[ -d "$target" ]]
+
+if [[ -d "$target" ]]; then
+    echo "$target" is a directory:
     echo
-    if type exa &> /dev/null; then
-        exa -la $color_param "$filename"
+    if [[ "$ls_command" = exa ]]; then
+        exa -la $color_param "$target"
     else
-        ls -la $color_param "$filename"
+        ls -la $color_param "$target"
     fi
-elif [[ -f "$filename" ]]; then
-    ${=less_command} "$filename"
+elif [[ -f "$target" ]]; then
+    ${=pager_command} "$target"
 fi
