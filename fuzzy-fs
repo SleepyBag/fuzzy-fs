@@ -6,6 +6,7 @@ function fuzzy-fs {
     local field=main
 
     local base_dir=$FUZZY_FS_BASE_DIR
+    export base_dir
     local VERSION=1.0
     local log_file=$base_dir/.log
 
@@ -24,6 +25,8 @@ function fuzzy-fs {
             d=debug_mode   -debug=debug_mode \
             h=help         -help=help \
             V=version      -version=version
+    export no_color show_hidden debug_mode
+
     local init_path="$*"
     init_path=${init_path:-.}
 
@@ -60,15 +63,17 @@ EOF
     fi
 
     # environment params
-    local ffs_shell=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
-    local ffs_editor=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
-    local ffs_pager=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
+    local shell_command=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
+    local editor_command=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
+    local pager_command=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
+    export pager_command
 
     # tunable commands
     local open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
     local preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/_fuzzy-fs-preview}
     local ls_command=${FUZZY_FS_LS_COMMAND:-$(_fuzzy-fs-first-available-command exa ls)}
     local terminal_command=${FUZZY_FS_TERMINAL_COMMAND:-$(_fuzzy-fs-first-available-command "konsole --workdir" "gnome-terminal --working-directory" "terminology -d")}
+    export ls_command
 
     # tunable icons
     local file_icon=${FUZZY_FS_FILE_ICON:- fl}

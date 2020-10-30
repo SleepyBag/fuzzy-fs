@@ -29,7 +29,7 @@ function _fuzzy-fs-fzf {
                --query="$init_query" \
                --height=100% \
                $color_param \
-               --preview="$preview_command {-1}" \
+               --preview="$preview_command {}" \
                --bind "Ctrl-C:cancel" \
                --expect "$expect" | \
         while read line; do

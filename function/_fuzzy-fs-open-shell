@@ -8,6 +8,6 @@ function _fuzzy-fs-open-shell {
         ${=terminal_command} $pwd &> /dev/null &
         disown
     else
-        $ffs_shell
+        $shell_command
     fi
 }
