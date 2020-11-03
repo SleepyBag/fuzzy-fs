@@ -7,12 +7,8 @@ else
 fi
 
 target=$($base_dir/function/_ffs-parse-item $*)
-notify-send target '"'$target'"'
-[[ -d "$target" ]]
-notify-send good $?
 
 if [[ -d "$target" ]]; then
-    notify-send dir-target $target
     echo "$target" is a directory:
     echo
     if [[ "$ls_command" = exa ]]; then
@@ -21,6 +17,28 @@ if [[ -d "$target" ]]; then
         ls -la $color_param "$target"
     fi
 elif [[ -f "$target" ]]; then
-    notify-send file-target $target
     ${=pager_command} "$target"
+    case "$target" in
+        *.pdf)
+            pdftotext "$target" - | ${=pager_command}
+            ;;
+        *.zip)
+            unzip -l "$target" | ${=pager_command}
+            ;;
+        *.tar.gz)
+            tar -ztvf "$target" | ${=pager_command}
+            ;;
+        *.tar.bz2)
+            tar -jtvf "$target" | ${=pager_command}
+            ;;
+        *.tar.xz)
+            tar -Jtvf "$target" | ${=pager_command}
+            ;;
+        *.tar)
+            tar -tvf "$target" | ${=pager_command}
+            ;;
+        *)
+            ${=pager_command} "$target"
+            ;;
+    esac
 fi
