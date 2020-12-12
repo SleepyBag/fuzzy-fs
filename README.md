@@ -13,6 +13,8 @@ zplug "SleepyBag/fuzzy-fs", use:fuzzy-fs
 1. Clone this repo into an arbitrary path;
 2. source file `fuzzy-fs` in your `.zshrc`.
 
+Other zsh plugin managers should work like `zplug`. If `fuzzy-fs` doesn't work well with your plugin manager, please feel free to open a new issue.
+
 ## Dependencies
 
 - zsh
