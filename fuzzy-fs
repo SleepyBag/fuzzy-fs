@@ -65,7 +65,7 @@ EOF
     # environment params
     local shell_command=${SHELL:-$(_fuzzy-fs-first-available-command zsh bash ksh fish)}
     local editor_command=${EDITOR:-$(_fuzzy-fs-first-available-command vim emacs vi)}
-    local pager_command=${PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always" less more)}
+    local pager_command=${FUZZY_FS_PAGER:-$(_fuzzy-fs-first-available-command "bat --paging=always --color=always" less more)}
     export pager_command
 
     # tunable commands
