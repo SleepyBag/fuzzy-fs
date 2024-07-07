@@ -40,7 +40,7 @@ Options:
     -a    --all          list hidden files
     -H    --no-header    don't show key-binding tips in header
           --no-color     disable color
-    -g    --git          show git info in the file list (requires exa)
+    -g    --git          show git info in the file list (requires exa/eza)
     -d    --debug-mode   output debug info into log file
     -V    --version      show version
     -h    --help         show this help
@@ -71,7 +71,7 @@ EOF
     # tunable commands
     local open_command=${FUZZY_FS_OPEN_COMMAND:-xdg-open}
     local preview_command=${FUZZY_FS_PREVIEW_COMMAND:-$base_dir/module/_fuzzy-fs-preview}
-    local ls_command=${FUZZY_FS_LS_COMMAND:-$(_fuzzy-fs-first-available-command exa ls)}
+    local ls_command=${FUZZY_FS_LS_COMMAND:-$(_fuzzy-fs-first-available-command exa eza ls)}
     local terminal_command=${FUZZY_FS_TERMINAL_COMMAND:-$(_fuzzy-fs-first-available-command "konsole --workdir" "gnome-terminal --working-directory" "terminology -d")}
     export ls_command
 

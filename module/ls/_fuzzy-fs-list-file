@@ -10,7 +10,7 @@ function _fuzzy-fs-list-file {
     local color_param=""
     local shown_hidden=""
     case $ls_command in
-        exa)
+        exa | eza)
             params="-lh"
             if [[ ! -z "$show_git" ]]; then
                 params+=" --git"
@@ -43,7 +43,7 @@ function _fuzzy-fs-list-file {
 
     # count the column number to know which column is filename
     case $ls_command in
-        exa) filename_column=$(($(echo $header | wc -w)+1)) ;;
+        exa | eza) filename_column=$(($(echo $header | wc -w)+1)) ;;
         ls) filename_column=9 ;;
     esac
 

@@ -13,6 +13,8 @@ if [[ -d "$target" ]]; then
     echo
     if [[ "$ls_command" = exa ]]; then
         exa -la $color_param "$target"
+    elif [[ "$ls_command" = eza ]]; then
+        eza -la $color_param "$target"
     else
         ls -la $color_param "$target"
     fi
