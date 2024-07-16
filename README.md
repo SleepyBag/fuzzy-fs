@@ -24,7 +24,7 @@ Other zsh plugin managers should work like `zplug`. If `fuzzy-fs` doesn't work w
 
 - [z](https://github.com/rupa/z "z") (to list recent files, you don't need autojump if you have z)
 - [autojump](https://github.com/wting/autojump "autojump") (to list recent files, you don't need z if you have autojump)
-- [exa](https://github.com/ogham/exa "exa") (to show colorful file list with git information)
+- [exa](https://github.com/ogham/exa "exa")/[eza](https://github.com/eza-community/eza "eza") (to show colorful file list with git information)
 - [bat](https://github.com/sharkdp/bat "bat") (for colored preview)
 - [fd](https://github.com/sharkdp/fd "fd") (for faster and colored find)
 
@@ -66,12 +66,12 @@ If you are not in a tmux session, the new shell will be opened in a new terminal
 
 ## Customizable Commands
 
-Maybe you don't like some commands used in `fuzzy-fs`. For example, maybe you prefer `ls` to `exa`. Here are some customizable commands.
+Maybe you don't like some commands used in `fuzzy-fs`. For example, maybe you prefer `ls` to `exa`/`eza`. Here are some customizable commands.
 
 | variable name             | meaning                            | default value       | Notes                                                                                |
 |---------------------------|------------------------------------|---------------------|--------------------------------------------------------------------------------------|
 | FUZZY_FS_OPEN_COMMAND     | the command to open a file         | `xdg-open`          |                                                                                      |
-| FUZZY_FS_LS_COMMAND       | the command to list files          | `exa` or `ls`       | only `exa` and `ls` are supported                                                    |
+| FUZZY_FS_LS_COMMAND       | the command to list files          | `exa`/`eza` or `ls`       | only `exa`/`eza` and `ls` are supported                                                    |
 | FUZZY_FS_TERMINAL_COMMAND | the command to open a new terminal | `konsole --workdir` | read the manual of your terminal emulator to know how to specify a working directory |
 
 ## Icons
